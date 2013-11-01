@@ -12,6 +12,7 @@ use autodie;
 use Config::JSON;
 use File::Basename;
 use File::Spec;
+use FindBin;
 
 sub complete_file_path {
     my ($file_path) = @_;
@@ -24,13 +25,13 @@ sub complete_file_path {
 }
 
 sub get_base_dir_path {
-    my $base_dir_path = File::Spec->rel2abs(dirname(__FILE__))."/../";
+    my $base_dir_path = $FindBin::Bin;
     return $base_dir_path;
 }
 
 sub get_base_file_name {
-    my $base_dir_path = File::Basename::basename(__FILE__);
-    return $base_dir_path;
+    my $base_file_name = $FindBin::Script;
+    return $base_file_name;
 }
 sub get_config {
     my ($conf_file_path) = @_;
