@@ -13,12 +13,6 @@ use Config::JSON;
 use File::Basename;
 use File::Spec;
 
-sub read_json_file {
-    my ($file_path) = @_;
-    my $json = Config::JSON->new($file_path);
-    return $json;
-}
-
 sub complete_file_path {
     my ($file_path) = @_;
     unless ($file_path =~ m|^\/|) {
@@ -29,6 +23,15 @@ sub complete_file_path {
     return $file_path;
 }
 
+sub get_base_dir_path {
+    my $base_dir_path = File::Spec->rel2abs(dirname(__FILE__))."/../";
+    return $base_dir_path;
+}
+
+sub get_base_file_name {
+    my $base_dir_path = File::Basename::basename(__FILE__);
+    return $base_dir_path;
+}
 sub get_config {
     my ($conf_file_path) = @_;
     my $config = "";
@@ -46,9 +49,10 @@ sub get_config {
     return $config;
 }
 
-sub get_base_dir_path {
-    my $base_dir_path = File::Spec->rel2abs(dirname(__FILE__))."/../";
-    return $base_dir_path;
+sub read_json_file {
+    my ($file_path) = @_;
+    my $json = Config::JSON->new($file_path);
+    return $json;
 }
 
 1;
