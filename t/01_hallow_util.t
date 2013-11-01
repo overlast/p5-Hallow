@@ -6,8 +6,6 @@ use File::Spec;
 
 use Hallow::Util;
 
-# file mode specification error: (wrong-type-argument listp "\\.\\([pP][Llm]\\|psgi\\|t\\|cgi\\)$")
-
 sub write_dummy_json {
     my ($file_path) = @_;
     my $is_write = 0;
