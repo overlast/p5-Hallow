@@ -9,13 +9,9 @@ our $VERSION = "0.0.0_01";
 use utf8;
 use autodie;
 
-require Exporter;
-our @ISA = qw(Exporter);
-our @EXPORT = qw/read_json_file complete_file_path get_config/;
-
 use Config::JSON;
-use File::Basename qw/basename dirname/;
-use File::Spec qw/rel2abs/;
+use File::Basename;
+use File::Spec;
 
 sub read_json_file {
     my ($file_path) = @_;
@@ -26,8 +22,8 @@ sub read_json_file {
 sub complete_file_path {
     my ($file_path) = @_;
     unless ($file_path =~ m|^\/|) {
-        my $file_name = basename($file_path);
-        $file_path = File::Spec->rel2abs(dirname($file_path."/"));
+        my $file_name = File::Basename::basename($file_path);
+        $file_path = File::Spec->rel2abs(File::Basename::dirname($file_path."/"));
         $file_path .= "/".$file_name;
     }
     return $file_path;
@@ -48,6 +44,11 @@ sub get_config {
         $config = "Con't get a path of a configure file";
     }
     return $config;
+}
+
+sub get_base_dir_path {
+    my $base_dir_path = File::Spec->rel2abs(dirname(__FILE__))."/../";
+    return $base_dir_path;
 }
 
 1;
