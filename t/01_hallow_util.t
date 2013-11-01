@@ -57,6 +57,16 @@ subtest 'Test a JSON configure file reader' => sub {
         is($already_abs_path, $abs_file_path, "no need to complete the path");
     };
 
+    subtest 'Test get_base_file_name()' => sub {
+        my $file_name = File::Basename::basename(__FILE__);
+        is(Hallow::Util::get_base_file_name(), $file_name, "get a file name of this test file");
+    };
+
+    subtest 'Test get_base_dir_path()' => sub {
+        my $dir_path = Hallow::Util::complete_file_path(File::Basename::dirname(__FILE__));
+        is(Hallow::Util::get_base_dir_path(), $dir_path, "get a file path of this test file");
+    };
+
     subtest 'Test get_config()' => sub {
         my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
         &write_dummy_json($tmp_json_path);
@@ -66,6 +76,10 @@ subtest 'Test a JSON configure file reader' => sub {
         is (exists $config->{key}, 1, "this config object have a key property");
         is ($config->{key}, "value", "this config object have a key-value pair");
     };
+
+
+
+
 };
 
 done_testing;
