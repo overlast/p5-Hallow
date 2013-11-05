@@ -225,19 +225,22 @@ sub get_prev_dt {
 
     my $type           = $param->{type} if (exists $param->{type});
     my $n_times        = $param->{n_times} if (exists $param->{n_times});
+    $n_times = 1 unless ((defined $n_times) && ($n_times > 0));
     my $shift_seconds  = $param->{shift_seconds} if (exists $param->{shift_seconds});
+    $shift_seconds = 0 unless ((defined $shift_seconds) && ($shift_seconds > 0));
     my $is_cut_surplus = $param->{is_cut_surplus} if (exists $param->{is_cut_surplus});
 
-    my $next_dt = $dt->clone();
-
-    my $diff_of_right_time = 0;
-    if ($is_cut_surplus) {
-        $diff_of_right_time = get_surplus_of_prev_dt($type, $next_dt, $n_times);
-    } else {
-        $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+    my $next_dt = "";
+    if (defined $type) {
+        $next_dt = $dt->clone();
+        my $diff_of_right_time = 0;
+        if ($is_cut_surplus) {
+            $diff_of_right_time = get_surplus_of_prev_dt($type, $next_dt, $n_times);
+        } else {
+            $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+        }
+        $next_dt->subtract(seconds => $diff_of_right_time);
     }
-
-    $next_dt->subtract(seconds => $diff_of_right_time);
     return $next_dt;
 }
 
@@ -246,20 +249,22 @@ sub get_next_dt {
 
     my $type           = $param->{type} if (exists $param->{type});
     my $n_times        = $param->{n_times} if (exists $param->{n_times});
+    $n_times = 1 unless ((defined $n_times) && ($n_times > 0));
     my $shift_seconds  = $param->{shift_seconds} if (exists $param->{shift_seconds});
+    $shift_seconds = 0 unless ((defined $shift_seconds) && ($shift_seconds > 0));
     my $is_cut_surplus = $param->{is_cut_surplus} if (exists $param->{is_cut_surplus});
 
-    my $next_dt = $dt->clone();
-
-    my $diff_of_right_time = 0;
-    if ($is_cut_surplus) {
-        $diff_of_right_time = get_surplus_of_next_dt($type, $next_dt, $n_times);
-    } else {
-        $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+    my $next_dt = "";
+    if (defined $type) {
+        $next_dt = $dt->clone();
+        my $diff_of_right_time = 0;
+        if ($is_cut_surplus) {
+            $diff_of_right_time = get_surplus_of_next_dt($type, $next_dt, $n_times);
+        } else {
+            $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+        }
+        $next_dt->add(seconds => $diff_of_right_time);
     }
-
-    $next_dt->add(seconds => $diff_of_right_time);
-
     return $next_dt;
 }
 
