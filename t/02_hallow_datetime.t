@@ -127,8 +127,59 @@ subtest 'Test to return the boundary of cyclical event' => sub {
         is (Hallow::DateTime::get_seconds_based_on_cycle_type("secondly", 2), 2, "Make check a second is 2 seconds");
     };
 
+    subtest 'Test get_surplus_between_next_dt()' => sub {
+        {
+            my $ymdhms = "2022-10-10 10:10:10";
+            my $dt = Hallow::DateTime::get_dt($ymdhms);
+            my $type = "ymdhms";
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhms", $dt), 1, "Make check a surplus between 10:10:10 and 10:10:11");
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhms", $dt, 2), 2, "Make check a surplus between 10:10:10 and 10:10:12");
 
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt), 10, "Make check a surplus between 10:10:10 and 10:10:20");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt, 2), 10, "Make check a surplus between 10:10:10 and 10:10:20");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt, 3), 20, "Make check a surplus between 10:10:10 and 10:10:30");
 
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhm", $dt), 50, "Make check a surplus between 10:10:10 and 10:11:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhm", $dt, 2), 110, "Make check a surplus between 10:10:10 and 10:12:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt), 590, "Make check a surplus between 10:10:10 and 10:20:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt, 2), 590, "Make check a surplus between 10:10:10 and 10:20:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt, 3), 1190, "Make check a surplus between 10:10:10 and 10:30:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhh", $dt), 2990, "Make check a surplus between 10:10:10 and 11:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhh", $dt, 2), 6590, "Make check a surplus between 10:10:10 and 12:00:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmdd", $dt), 49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-11 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmdd", $dt, 2), 49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-12 00:00:00");
+        }
+
+        {
+            my $ymdhms = "2022-10-10 23:59:59";
+            my $dt = Hallow::DateTime::get_dt($ymdhms);
+            my $type = "ymdhms";
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhms", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhms", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhmms", $dt, 3), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhm", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("ymdhm", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhhm", $dt, 3), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhh", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmddhh", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmdd", $dt), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt("yyyymmdd", $dt, 2), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+        }
+    };
 };
+
+
+
+
 
 done_testing;
