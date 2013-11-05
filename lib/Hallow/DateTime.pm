@@ -184,17 +184,17 @@ sub get_surplus_between_next_dt {
         my $minute = $dt->minute();
         my $second = $dt->second();
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
-            $surplus = 86400 - int (($hour * 3600) + ($minute * 60) + $second);
+            $surplus = 86400 - (($hour * 3600) + ($minute * 60) + $second);
         } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
-            $surplus = (3600 * $n_times) - int ((($hour * 3600) + ($minute * 60) + $second) % (3600 * $n_times));
+            $surplus = (3600 * $n_times) - ((($hour * 3600) + ($minute * 60) + $second) % (3600 * $n_times));
         } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
-            $surplus = (60 * $n_times) - int ((($minute * 60) + $second) % (60 * $n_times));
+            $surplus = (60 * $n_times) - ((($minute * 60) + $second) % (60 * $n_times));
         } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
-            $surplus = (600 * $n_times) - int ((($minute * 60) + $second) % (600 * $n_times));
+            $surplus = (600 * $n_times) - ((($minute * 60) + $second) % (600 * $n_times));
         } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
-            $surplus = (1 * $n_times) - int ($second % (1 * $n_times));
+            $surplus = (1 * $n_times) - ($second % (1 * $n_times));
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
-            $surplus = (10 * $n_times) - int ($second % (10 * $n_times));
+            $surplus = (10 * $n_times) - ($second % (10 * $n_times));
         }
     }
     return $surplus;
@@ -203,7 +203,7 @@ sub get_surplus_between_next_dt {
 sub get_seconds_based_on_cycle_type {
     my ($type, $n_times) = @_;
     $n_times = 1 unless (defined $n_times);
-    my $seconds = 0;
+    my $seconds = -1;
     if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
         $seconds = 86400 * $n_times;
     } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
@@ -232,9 +232,9 @@ sub get_prev_dt {
 
     my $diff_of_right_time = 0;
     if ($is_cut_surplus) {
-        $diff_of_right_time = get_surplus_of_next_dt($type, $n_times, $shift_seconds, $next_dt);
+        $diff_of_right_time = get_surplus_of_prev_dt($type, $next_dt, $n_times);
     } else {
-        $diff_of_right_time = get_seconds_by_file_split_type($type, $n_times, $shift_seconds);
+        $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
     }
 
     $next_dt->subtract(seconds => $diff_of_right_time);
@@ -253,9 +253,9 @@ sub get_next_dt {
 
     my $diff_of_right_time = 0;
     if ($is_cut_surplus) {
-        $diff_of_right_time = get_surplus_of_next_dt($type, $n_times, $shift_seconds, $next_dt);
+        $diff_of_right_time = get_surplus_of_next_dt($type, $next_dt, $n_times);
     } else {
-        $diff_of_right_time = get_seconds_by_file_split_type($type, $n_times, $shift_seconds);
+        $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
     }
 
     $next_dt->add(seconds => $diff_of_right_time);
