@@ -144,6 +144,37 @@ sub get_dt {
     return $dt;
 }
 
+sub get_surplus_between_prev_dt {
+    my ($type, $dt, $n_times) = @_;
+    my $surplus = -1;
+    if (ref $dt eq "DateTime") {
+        $n_times = 1 unless (defined $n_times);
+        my $hour = $dt->hour();
+        my $minute = $dt->minute();
+        my $second = $dt->second();
+        if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
+            $surplus = (($hour * 3600) + ($minute * 60) + $second) % 86400;
+            $surplus = 86400 unless ($surplus);
+        } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
+            $surplus = (($hour * 3600) + ($minute * 60) + $second) % (3600 * $n_times);
+            $surplus = 3600 * $n_times unless ($surplus);
+        } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
+            $surplus = ($minute * 60 + $second) % (60 * $n_times);
+            $surplus = 60 * $n_times unless ($surplus);
+        } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
+            $surplus = ($minute * 60 + $second) % (600 * $n_times);
+            $surplus = 600 * $n_times unless ($surplus);
+        } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
+            $surplus = $second % (1 * $n_times);
+            $surplus = 1 * $n_times unless ($surplus);
+        } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
+            $surplus = $second % (10 * $n_times);
+            $surplus = 10 * $n_times unless ($surplus);
+        }
+    }
+    return $surplus;
+}
+
 sub get_surplus_between_next_dt {
     my ($type, $dt, $n_times) = @_;
     my $surplus = -1;
@@ -153,7 +184,7 @@ sub get_surplus_between_next_dt {
         my $minute = $dt->minute();
         my $second = $dt->second();
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
-            $surplus = (86400 * $n_times) - int (((86400 * ($n_times - 1)) + ($hour * 3600) + ($minute * 60) + $second) % (86400 * $n_times));
+            $surplus = 86400 - int (($hour * 3600) + ($minute * 60) + $second);
         } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
             $surplus = (3600 * $n_times) - int ((($hour * 3600) + ($minute * 60) + $second) % (3600 * $n_times));
         } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
