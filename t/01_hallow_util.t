@@ -74,10 +74,6 @@ subtest 'Test a JSON configure file reader' => sub {
         is (exists $config->{key}, 1, "this config object have a key property");
         is ($config->{key}, "value", "this config object have a key-value pair");
     };
-
-
-
-
 };
 
 done_testing;
