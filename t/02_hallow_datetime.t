@@ -313,6 +313,82 @@ subtest 'Test to return the boundary of cyclical event' => sub {
 
 };
 
+subtest 'Test to return a DateTime object of next cycle' => sub {
+    subtest 'Test get_next_dt()' => sub {
+        my $ymdhms = "2022-10-10 00:00:01";
+        my $dt = Hallow::DateTime::get_dt($ymdhms);
+        my $unixtime = time();
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "daily",})->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "daily",})->hms(""), "000001", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
+
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "hourly",})->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "hourly",})->hms(""), "010001", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "010000", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
+
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "minutely",})->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "minutely",})->hms(""), "000101", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "000100", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
+
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10min",})->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10min",})->hms(""), "001001", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "001000", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
+
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "secondly",})->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "secondly",})->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
+
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10sec",})->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10sec",})->hms(""), "000011", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:00:11");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
+        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "000010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
+    };
+};
+
+subtest 'Test to return a DateTime object of prev cycle' => sub {
+    subtest 'Test get_prev_dt()' => sub {
+        my $ymdhms = "2022-10-09 23:59:59";
+        my $dt = Hallow::DateTime::get_dt($ymdhms);
+        my $unixtime = time();
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "daily",})->ymd(""), "20221008", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "daily",})->hms(""), "235959", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
+
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly",})->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 23:59:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly",})->hms(""), "225959", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 22:59:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "230000", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
+
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely",})->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely",})->hms(""), "235859", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "235900", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
+
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10min",})->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10min",})->hms(""), "234959", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "235000", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
+
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly",})->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly",})->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
+
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec",})->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec",})->hms(""), "235949", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "235950", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
+    };
+};
+
+
+
 
 # エラーの時を確かめるテストを足す
 
