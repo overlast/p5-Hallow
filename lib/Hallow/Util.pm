@@ -21,6 +21,7 @@ sub complete_file_path {
         $file_path = File::Spec->rel2abs(File::Basename::dirname($file_path."/"));
         $file_path .= "/".$file_name;
     }
+    $file_path =~ s|/{1,}|/|g;
     return $file_path;
 }
 
@@ -33,6 +34,7 @@ sub get_base_file_name {
     my $base_file_name = $FindBin::Script;
     return $base_file_name;
 }
+
 sub get_config {
     my ($conf_file_path) = @_;
     my $config = "";
@@ -40,7 +42,11 @@ sub get_config {
         $conf_file_path = &complete_file_path($conf_file_path) unless ($conf_file_path =~ m|^\/|);
         if (-f $conf_file_path) {
             $config = &read_json_file($conf_file_path);
-            $config = $config->{config};
+            if (ref $config eq "Config::JSON") {
+                $config = $config->{config}
+            } else {
+                $config = "It isn't Config::JSON object";
+            }
         } else {
             $config = "Can't find a configure file";
         }
@@ -52,8 +58,28 @@ sub get_config {
 
 sub read_json_file {
     my ($file_path) = @_;
-    my $json = Config::JSON->new($file_path);
+    my $json = "";
+    if ((-f $file_path) && (-s $file_path)){
+        eval { $json = Config::JSON->new($file_path); };
+        if ($@) { $json = "Can't read this JSON file"; }
+    }
     return $json;
+}
+
+sub num_to_num_string {
+    my ($num, $digit) = @_;
+    my $length = 1;
+    my $tmp = $num;
+    while (int($tmp / 10) > 0) {
+        $length++;
+        $tmp = int($tmp / 10);
+    }
+    my $diff = $digit - $length;
+    while ($diff > 0) {
+        $num = "0".$num;
+        $diff--;
+    }
+    return $num;
 }
 
 1;
