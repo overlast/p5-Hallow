@@ -131,14 +131,16 @@ sub get_prev_dt {
     if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
         $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
         $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
-        $next_dt = $dt->clone();
+        my $tmp_dt = $dt->clone();
         my $diff_of_right_time = 0;
         if ((exists $param->{is_cut_surplus}) && ($param->{is_cut_surplus})) {
-            $diff_of_right_time = get_surplus_between_prev_dt($next_dt, $param);
+            $diff_of_right_time = get_surplus_between_prev_dt($tmp_dt, $param);
         } else {
             $diff_of_right_time = get_seconds_based_on_cycle_type($param);
         }
-        $next_dt->subtract(seconds => $diff_of_right_time);
+        if ($diff_of_right_time >= 0) {
+            $next_dt = $tmp_dt->subtract(seconds => $diff_of_right_time);
+        }
     }
     return $next_dt;
 }
@@ -149,14 +151,16 @@ sub get_next_dt {
     if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
         $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
         $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
-        $next_dt = $dt->clone();
+        my $tmp_dt = $dt->clone();
         my $diff_of_right_time = 0;
         if ((exists $param->{is_cut_surplus}) && ($param->{is_cut_surplus})) {
-            $diff_of_right_time = get_surplus_between_next_dt($next_dt, $param);
+            $diff_of_right_time = get_surplus_between_next_dt($tmp_dt, $param);
         } else {
             $diff_of_right_time = get_seconds_based_on_cycle_type($param);
         }
-        $next_dt->add(seconds => $diff_of_right_time);
+        if ($diff_of_right_time >= 0) {
+            $next_dt = $tmp_dt->add(seconds => $diff_of_right_time);
+        }
     }
     return $next_dt;
 }
