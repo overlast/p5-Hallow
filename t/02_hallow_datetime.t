@@ -347,6 +347,12 @@ subtest 'Test to return a DateTime object of next cycle' => sub {
         is (Hallow::DateTime::get_next_dt($dt, {"type" => "10sec",})->hms(""), "000011", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:00:11");
         is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
         is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "000010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
+
+        is (Hallow::DateTime::get_next_dt(), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_next_dt($dt), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_next_dt($dt, ["array"]), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_next_dt($dt, {"typo" => "",}), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_next_dt($dt, {"type" => "",}), "", "Make check to get null character string as an error value");
     };
 };
 
@@ -384,12 +390,13 @@ subtest 'Test to return a DateTime object of prev cycle' => sub {
         is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec",})->hms(""), "235949", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
         is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
         is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "235950", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
+
+        is (Hallow::DateTime::get_prev_dt(), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_prev_dt($dt), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_prev_dt($dt, ["array"]), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_prev_dt($dt, {"typo" => "",}), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "",}), "", "Make check to get null character string as an error value");
     };
 };
-
-
-
-
-# エラーの時を確かめるテストを足す
 
 done_testing;
