@@ -145,10 +145,13 @@ sub get_dt {
 }
 
 sub get_surplus_between_prev_dt {
-    my ($type, $dt, $n_times) = @_;
+    my ($dt, $param) = @_;
     my $surplus = -1;
-    if (ref $dt eq "DateTime") {
-        $n_times = 1 unless (defined $n_times);
+    if ((exists $param->{type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{type};
+        my $n_times = 1;
+        $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
+
         my $hour = $dt->hour();
         my $minute = $dt->minute();
         my $second = $dt->second();
@@ -176,10 +179,13 @@ sub get_surplus_between_prev_dt {
 }
 
 sub get_surplus_between_next_dt {
-    my ($type, $dt, $n_times) = @_;
+    my ($dt, $param) = @_;
     my $surplus = -1;
-    if (ref $dt eq "DateTime") {
-        $n_times = 1 unless (defined $n_times);
+    if ((exists $param->{type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{type};
+        my $n_times = 1;
+        $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
+
         my $hour = $dt->hour();
         my $minute = $dt->minute();
         my $second = $dt->second();
@@ -201,43 +207,41 @@ sub get_surplus_between_next_dt {
 }
 
 sub get_seconds_based_on_cycle_type {
-    my ($type, $n_times) = @_;
-    $n_times = 1 unless (defined $n_times);
+    my ($param) = @_;
     my $seconds = -1;
-    if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
-        $seconds = 86400 * $n_times;
-    } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
-        $seconds = 3600 * $n_times;
-    } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
-        $seconds = 60 * $n_times;
-    } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
-        $seconds = 600 * $n_times;
-    } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
-        $seconds = 1 * $n_times;
-    } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
-        $seconds = 10 * $n_times;
+    if (exists $param->{type}) {
+        my $type = $param->{type};
+        my $n_times = 1;
+        $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
+        if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
+            $seconds = 86400 * $n_times;
+        } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
+            $seconds = 3600 * $n_times;
+        } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
+            $seconds = 60 * $n_times;
+        } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
+            $seconds = 600 * $n_times;
+        } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
+            $seconds = 1 * $n_times;
+        } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
+            $seconds = 10 * $n_times;
+        }
     }
     return $seconds;
 }
 
 sub get_prev_dt {
     my ($dt, $param) = @_;
-
-    my $type           = $param->{type} if (exists $param->{type});
-    my $n_times        = $param->{n_times} if (exists $param->{n_times});
-    $n_times = 1 unless ((defined $n_times) && ($n_times > 0));
-    my $shift_seconds  = $param->{shift_seconds} if (exists $param->{shift_seconds});
-    $shift_seconds = 0 unless ((defined $shift_seconds) && ($shift_seconds > 0));
-    my $is_cut_surplus = $param->{is_cut_surplus} if (exists $param->{is_cut_surplus});
-
+    $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
+    $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
     my $next_dt = "";
-    if (defined $type) {
+    if (exists $param->{type}) {
         $next_dt = $dt->clone();
         my $diff_of_right_time = 0;
-        if ($is_cut_surplus) {
-            $diff_of_right_time = get_surplus_of_prev_dt($type, $next_dt, $n_times);
+        if ((exists $param->{is_cut_surplus}) && ($param->{is_cut_surplus})) {
+            $diff_of_right_time = get_surplus_of_prev_dt($next_dt, $param);
         } else {
-            $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+            $diff_of_right_time = get_seconds_based_on_cycle_type($param);
         }
         $next_dt->subtract(seconds => $diff_of_right_time);
     }
@@ -246,22 +250,16 @@ sub get_prev_dt {
 
 sub get_next_dt {
     my ($dt, $param) = @_;
-
-    my $type           = $param->{type} if (exists $param->{type});
-    my $n_times        = $param->{n_times} if (exists $param->{n_times});
-    $n_times = 1 unless ((defined $n_times) && ($n_times > 0));
-    my $shift_seconds  = $param->{shift_seconds} if (exists $param->{shift_seconds});
-    $shift_seconds = 0 unless ((defined $shift_seconds) && ($shift_seconds > 0));
-    my $is_cut_surplus = $param->{is_cut_surplus} if (exists $param->{is_cut_surplus});
-
+    $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
+    $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
     my $next_dt = "";
-    if (defined $type) {
+    if (exists $param->{type}) {
         $next_dt = $dt->clone();
         my $diff_of_right_time = 0;
-        if ($is_cut_surplus) {
-            $diff_of_right_time = get_surplus_of_next_dt($type, $next_dt, $n_times);
+        if ((exists $param->{is_cut_surplus}) && ($param->{is_cut_surplus})) {
+            $diff_of_right_time = get_surplus_of_next_dt($next_dt, $param);
         } else {
-            $diff_of_right_time = get_seconds_based_on_cycle_type($type, $n_times);
+            $diff_of_right_time = get_seconds_based_on_cycle_type($param);
         }
         $next_dt->add(seconds => $diff_of_right_time);
     }
