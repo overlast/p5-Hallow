@@ -243,15 +243,20 @@ sub get_int_time_stamp {
     return $stamp;
 }
 
-sub compare_dt_first_is_more {
-    my ($self, $dt, $next_dt) = @_;
-    my $is_crawlable = 0;
-    my $dt_epoch = $dt->epoch();
-    my $next_dt_epoch = $next_dt->epoch();
-    if ($dt_epoch >= $next_dt_epoch) {
-        $is_crawlable = 1;
-   }
-    return $is_crawlable;
+sub is_first_dt_future {
+    my ($dt1, $dt2) = @_;
+    my $is_future = "";
+    if ((ref $dt1 eq "DateTime") && (ref $dt2 eq "DateTime")) {
+        $is_future = -1;
+        my $dt1_epoch = $dt1->epoch();
+        my $dt2_epoch = $dt2->epoch();
+        if ($dt1_epoch > $dt2_epoch) {
+            $is_future = 1;
+        } elsif ($dt1_epoch == $dt2_epoch) {
+            $is_future = 0;
+        }
+    }
+    return $is_future;
 }
 
 1;
