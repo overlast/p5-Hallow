@@ -11,6 +11,8 @@ use autodie;
 
 use DateTime;
 
+use Hallow::Util;
+
 sub get_dt {
     my ($datetime_str) = @_;
     my ($year, $month, $day, $hour, $minute, $second) = (0, 0, 0, 0, 0, 0);
@@ -165,6 +167,85 @@ sub get_next_dt {
     return $next_dt;
 }
 
+sub dt_to_ymdh {
+    my ($dt) = @_;
+    my $str = "";
+    if (ref $dt eq "DateTime") {
+        my $ymd = $dt->ymd("");
+        my $h = substr($dt->hms(""), 0, 2);
+        $str = $ymd.$h;
+    }
+    return $str;
+}
+
+sub dt_to_yyyymmddhhm {
+    my ($dt) = @_;
+    my $str = "";
+    if (ref $dt eq "DateTime") {
+        my $ymd = $dt->ymd("");
+        my $hhm = substr($dt->hms(""), 0, 3);
+        $str = $ymd.$hhm;
+    }
+    return $str;
+}
+
+sub dt_to_ymdhm {
+    my ($dt) = @_;
+    my $str = "";
+    if (ref $dt eq "DateTime") {
+        my $ymd = $dt->ymd("");
+        my $hm = substr($dt->hms(""), 0, 4);
+        $str = $ymd.$hm;
+    }
+    return $str;
+}
+
+sub dt_to_yyyymmddhhmms {
+    my ($dt) = @_;
+    my $str = "";
+    if (ref $dt eq "DateTime") {
+        my $ymd = $dt->ymd("");
+        my $hhmms = substr($dt->hms(""), 0, 5);
+        $str = $ymd.$hhmms;
+    }
+    return $str;
+}
+
+sub dt_to_ymdhms {
+    my ($dt) = @_;
+    my $str = "";
+    if (ref $dt eq "DateTime") {
+        my $ymd = $dt->ymd("");
+        my $hms = $dt->hms("");
+        $str =  $ymd.$hms;
+    }
+    return $str;
+}
+
+sub get_int_time_stamp {
+    my ($type, $dt) = @_;
+    my $stamp = "";
+    if (defined $type) {
+        unless (ref $dt eq "DateTime"){
+            $dt = get_dt();
+        }
+        if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
+            $stamp = $dt->ymd("");
+        } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
+            $stamp = dt_to_ymdh($dt);
+        } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
+            $stamp = dt_to_yyyymmddhhm($dt);
+        } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
+            $stamp = dt_to_ymdhm($dt);
+        } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
+            $stamp = dt_to_yyyymmddhhmms($dt);
+        } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
+            $stamp = dt_to_ymdhms($dt);
+        }
+    }
+    return $stamp;
+}
+
 sub compare_dt_first_is_more {
     my ($self, $dt, $next_dt) = @_;
     my $is_crawlable = 0;
@@ -175,95 +256,6 @@ sub compare_dt_first_is_more {
    }
     return $is_crawlable;
 }
-
-sub dt_to_ymdh {
-    my ($self, $dt) = @_;
-    my $ymd = $dt->ymd("");
-    my $hour = $dt->hour();
-    $hour = $self->num_to_num_string($hour, 2);
-    return $ymd.$hour;
-}
-
-sub dt_to_ymdhm {
-    my ($self, $dt) = @_;
-    my $ymd = $dt->ymd("");
-    my $hour = $dt->hour();
-    my $minute = $dt->minute();
-    $hour = $self->num_to_num_string($hour, 2);
-    $minute = $self->num_to_num_string($minute, 2);
-    return $ymd.$hour.$minute;
-}
-
-sub dt_to_ymdhms {
-    my ($dt) = @_;
-    my $ymd = $dt->ymd("");
-    my $hms = $dt->hme("");
-    return $ymd.$hms;
-}
-
-sub dt_to_yyyymmddhhm {
-    my ($self, $dt) = @_;
-    my $ymd = $dt->ymd("");
-    my $hour = $dt->hour();
-    $hour = $self->num_to_num_string($hour, 2);
-    my $minute = $dt->minute();
-    $minute = int($minute / 10);
-    return $ymd.$hour.$minute;
-}
-
-sub dt_to_yyyymmddhhmms {
-    my ($self, $dt) = @_;
-    my $ymd = $dt->ymd("");
-    my $hour = $dt->hour();
-    my $minute = $dt->minute();
-    $hour = $self->num_to_num_string($hour, 2);
-    $minute = $self->num_to_num_string($minute, 2);
-    my $second = $dt->second();
-    $second = int($second / 10);
-    return $ymd.$hour.$minute.$second;
-}
-
-sub num_to_num_string {
-    my ($self, $num, $digit) = @_;
-    my $length = 1;
-    my $tmp = $num;
-    while (int($tmp / 10) > 0) {
-        $length++;
-        $tmp = int($tmp / 10);
-    }
-    my $diff = $digit - $length;
-    while ($diff > 0) {
-        $num = "0".$num;
-        $diff--;
-    }
-    return $num;
-}
-
-sub get_ymd_stamp {
-    my ($self, $named_conf, $dt) = @_;
-    my $stamp = "";
-    if (exists $named_conf->{file_split_type}) {
-        my $type = $named_conf->{file_split_type};
-        if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
-            $stamp = $dt->ymd("");
-        } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
-            $stamp = $self->dt_to_ymdh($dt);
-        } elsif (($type eq "minutely") || ($type eq "ymdhm") || ($type eq "yyyymmddhhmm")) {
-            $stamp = $self->dt_to_ymdhm($dt);
-        } elsif (($type eq "10min") || ($type eq "yyyymmddhhm")) {
-            $stamp = $self->dt_to_yyyymmddhhm($dt);
-        } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
-            $stamp = $self->dt_to_ymdhms($dt);
-        } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
-            $stamp = $self->dt_to_yyyymmddhhmms($dt);
-        }
-    }
-    unless ($stamp) {
-        $stamp = $dt->ymd("");
-    }
-    return $stamp;
-}
-
 
 1;
 
