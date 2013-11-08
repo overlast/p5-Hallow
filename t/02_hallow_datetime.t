@@ -430,5 +430,27 @@ subtest 'Test to return a time stamp string using DateTime object' => sub {
 };
 
 
+subtest 'Test to return int time stamp string using DateTime object and string type name' => sub {
+    my $ymdhms = "2022-10-09 23:59:59";
+    my $dt = Hallow::DateTime::get_dt($ymdhms);
+
+    subtest 'Test get_int_time_stamp()' => sub {
+        is (Hallow::DateTime::get_int_time_stamp("ymd", $dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("ymdh", $dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhm", $dt), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("ymdhm", $dt), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhmms",$dt), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("ymdhms", $dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("ymdhms", $dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
+
+        is (Hallow::DateTime::get_int_time_stamp(""), "", "Make check to get null character string as no type string error message");
+        is (Hallow::DateTime::get_int_time_stamp("", $dt), "", "Make check to get null character string as no type string error message");
+        is (Hallow::DateTime::get_int_time_stamp("ymd", ""), "", "Make check to get null character string as no DateTime object error message");
+    };
+};
+
+
+
+
 
 done_testing;
