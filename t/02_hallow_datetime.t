@@ -429,18 +429,16 @@ subtest 'Test to return a time stamp string using DateTime object' => sub {
     };
 };
 
-
 subtest 'Test to return int time stamp string using DateTime object and string type name' => sub {
     my $ymdhms = "2022-10-09 23:59:59";
     my $dt = Hallow::DateTime::get_dt($ymdhms);
 
     subtest 'Test get_int_time_stamp()' => sub {
-        is (Hallow::DateTime::get_int_time_stamp("ymd", $dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp("ymd", $dt), "20221009", "Make check to get YYYYMMDD string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp("ymdh", $dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhm", $dt), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp("ymdhm", $dt), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhmms",$dt), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("ymdhms", $dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp("ymdhms", $dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
 
         is (Hallow::DateTime::get_int_time_stamp(""), "", "Make check to get null character string as no type string error message");
@@ -449,8 +447,21 @@ subtest 'Test to return int time stamp string using DateTime object and string t
     };
 };
 
+subtest 'Test to return a comparative result of the unixtime of two DateTime object' => sub {
+    my $ymdhms1 = "2022-10-09 23:59:59";
+    my $ymdhms2 = "2022-10-10 00:00:00";
+    my $dt1 = Hallow::DateTime::get_dt($ymdhms1);
+    my $dt2 = Hallow::DateTime::get_dt($ymdhms2);
 
+    subtest 'Test is_first_dt_future()' => sub {
+        is (Hallow::DateTime::is_first_dt_future($dt1, $dt2), -1, "Make check to get false value(-1) when second DateTime object is future");
+        is (Hallow::DateTime::is_first_dt_future($dt1, $dt1), 0, "Make check to get false value(0) when both DateTime object is same");
+        is (Hallow::DateTime::is_first_dt_future($dt2, $dt1), 1, "Make check to get true value(1) when second DateTime object is future");
 
-
+        is (Hallow::DateTime::get_int_time_stamp("", ""), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::get_int_time_stamp($dt1, ""), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::get_int_time_stamp("", $dt1), "", "Make check to get null character string as undefined object error message");
+    };
+};
 
 done_testing;
