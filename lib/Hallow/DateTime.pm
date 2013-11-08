@@ -225,10 +225,7 @@ sub dt_to_ymdhms {
 sub get_int_time_stamp {
     my ($type, $dt) = @_;
     my $stamp = "";
-    if (defined $type) {
-        unless (ref $dt eq "DateTime"){
-            $dt = get_dt();
-        }
+    if ((defined $type) && (ref $dt eq "DateTime")) {
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
             $stamp = $dt->ymd("");
         } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
