@@ -399,4 +399,36 @@ subtest 'Test to return a DateTime object of prev cycle' => sub {
     };
 };
 
+subtest 'Test to return a time stamp string using DateTime object' => sub {
+    my $ymdhms = "2022-10-09 23:59:59";
+    my $dt = Hallow::DateTime::get_dt($ymdhms);
+
+    subtest 'Test dt_to_ymdh()' => sub {
+        is (Hallow::DateTime::dt_to_ymdh($dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::dt_to_ymdh(""), "", "Make check to get null character string as error message");
+    };
+
+    subtest 'Test dt_to_yyyymmddhhm()' => sub {
+        is (Hallow::DateTime::dt_to_yyyymmddhhm($dt), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
+        is (Hallow::DateTime::dt_to_yyyymmddhhm(""), "", "Make check to get null character string as error message");
+    };
+
+    subtest 'Test dt_to_ymdhm()' => sub {
+        is (Hallow::DateTime::dt_to_ymdhm($dt), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
+        is (Hallow::DateTime::dt_to_ymdhm(""), "", "Make check to get null character string as error message");
+    };
+
+    subtest 'Test dt_to_yyyymmddhhmms()' => sub {
+        is (Hallow::DateTime::dt_to_yyyymmddhhmms($dt), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
+        is (Hallow::DateTime::dt_to_yyyymmddhhmms(""), "", "Make check to get null character string as error message");
+    };
+
+    subtest 'Test dt_to_ymdhms()' => sub {
+        is (Hallow::DateTime::dt_to_ymdhms($dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
+        is (Hallow::DateTime::dt_to_ymdhms(""), "", "Make check to get null character string as error message");
+    };
+};
+
+
+
 done_testing;
