@@ -223,9 +223,10 @@ sub dt_to_ymdhms {
 }
 
 sub get_int_time_stamp {
-    my ($type, $dt) = @_;
+    my ($dt, $param) = @_;
     my $stamp = "";
-    if ((defined $type) && (ref $dt eq "DateTime")) {
+    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{type};
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
             $stamp = $dt->ymd("");
         } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
@@ -257,6 +258,18 @@ sub is_first_dt_future {
         }
     }
     return $is_future;
+}
+
+sub add_delay_seconds_to_dt {
+    my ($dt, $param) = @_;
+    my $result_dt = "";
+    if ((ref $param eq "HASH") && (exists $param->{delay_seconds}) && (ref $dt eq "DateTime")) {
+        my $delay_seconds = $param->{delay_seconds};
+        my $tmp_dt = $dt->clone();
+        $tmp_dt->subtract(seconds => $delay_seconds) if ($delay_seconds > 0);
+        $result_dt = $tmp_dt;
+    }
+    return $result_dt;
 }
 
 1;
