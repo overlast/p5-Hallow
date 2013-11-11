@@ -434,16 +434,16 @@ subtest 'Test to return int time stamp string using DateTime object and string t
     my $dt = Hallow::DateTime::get_dt($ymdhms);
 
     subtest 'Test get_int_time_stamp()' => sub {
-        is (Hallow::DateTime::get_int_time_stamp("ymd", $dt), "20221009", "Make check to get YYYYMMDD string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("ymdh", $dt), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhm", $dt), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("ymdhm", $dt), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("yyyymmddhhmms",$dt), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp("ymdhms", $dt), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
-
-        is (Hallow::DateTime::get_int_time_stamp(""), "", "Make check to get null character string as no type string error message");
-        is (Hallow::DateTime::get_int_time_stamp("", $dt), "", "Make check to get null character string as no type string error message");
-        is (Hallow::DateTime::get_int_time_stamp("ymd", ""), "", "Make check to get null character string as no DateTime object error message");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymd"}), "20221009", "Make check to get YYYYMMDD string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdh"}), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "yyyymmddhhm"}), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdhm"}), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "yyyymmddhhmms"}), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdhms"}), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt), "", "Make check to get null character string as no type string error message");
+        is (Hallow::DateTime::get_int_time_stamp($dt, ""), "", "Make check to get null character string as no type string error message");
+        is (Hallow::DateTime::get_int_time_stamp("", {"type" => "ymd"}), "", "Make check to get null character string as no DateTime object error message");
+        is (Hallow::DateTime::get_int_time_stamp({"type" => "ymd"}, $dt), "", "Make check to get null character string as no DateTime object error message");
     };
 };
 
@@ -461,6 +461,21 @@ subtest 'Test to return a comparative result of the unixtime of two DateTime obj
         is (Hallow::DateTime::get_int_time_stamp("", ""), "", "Make check to get null character string as undefined object error message");
         is (Hallow::DateTime::get_int_time_stamp($dt1, ""), "", "Make check to get null character string as undefined object error message");
         is (Hallow::DateTime::get_int_time_stamp("", $dt1), "", "Make check to get null character string as undefined object error message");
+    };
+};
+
+subtest 'Test to return a comparative result of the unixtime of two DateTime object' => sub {
+    my $ymdhms1 = "2022-10-09 23:59:59";
+    my $ymdhms2 = "2022-10-10 00:00:00";
+    my $dt1 = Hallow::DateTime::get_dt($ymdhms1);
+    my $dt2 = Hallow::DateTime::get_dt($ymdhms2);
+    my $param = {"delay_seconds" => 1};
+    subtest 'Test add_delay_seconds_to_dt()' => sub {
+        is_deeply(Hallow::DateTime::add_delay_seconds_to_dt($dt2, $param), $dt1, "Make check on 2022-10-10 00:00:00 - 1sec = 2022-10-09 23:59:59");
+        is (Hallow::DateTime::add_delay_seconds_to_dt(""), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::add_delay_seconds_to_dt($dt1), "", "Make check to get null character string as undefined parameter error message");
+        is (Hallow::DateTime::add_delay_seconds_to_dt($dt1, ""), "", "Make check to get null character string as undefined parameter error message");
+
     };
 };
 
