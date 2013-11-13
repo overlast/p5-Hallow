@@ -162,6 +162,36 @@ sub sequence {
     return;
 }
 
+sub _get_module_input_param {
+    my ($self, $module_param) = @_;
+    my $param = "";
+    if (ref $module_param eq "HASH") {
+        if (exists $module_param->{input}) {
+            my $param = $module_param->{input};
+        } else {
+            warnf "first argument must have input field";
+        }
+    } else {
+        warnf "first argument must be HASH ref";
+    }
+    return $param;
+}
+
+sub _get_module_output_param {
+    my ($self, $module_param) = @_;
+    my $param = "";
+    if (ref $module_param eq "HASH") {
+        if (exists $module_param->{output}) {
+            my $param = $module_param->{output};
+        } else {
+            warnf "first argument must have output field";
+        }
+    } else {
+        warnf "first argument must be HASH ref";
+    }
+    return $param;
+}
+
 sub _get_module_input_source {
     my ($self, $param) = @_;
     my @sources = ();
