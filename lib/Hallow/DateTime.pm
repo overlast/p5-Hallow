@@ -44,11 +44,10 @@ sub get_dt {
 sub get_surplus_between_prev_dt {
     my ($dt, $param) = @_;
     my $surplus = -1;
-    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
-        my $type = $param->{type};
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{time_cycle_type};
         my $n_times = 1;
         $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
-
         my $hour = $dt->hour();
         my $minute = $dt->minute();
         my $second = $dt->second();
@@ -71,6 +70,16 @@ sub get_surplus_between_prev_dt {
             $surplus = $second % (10 * $n_times);
             $surplus = 10 * $n_times unless ($surplus);
         }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have time_cycle_type field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $surplus;
 }
@@ -78,11 +87,10 @@ sub get_surplus_between_prev_dt {
 sub get_surplus_between_next_dt {
     my ($dt, $param) = @_;
     my $surplus = -1;
-    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
-        my $type = $param->{type};
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{time_cycle_type};
         my $n_times = 1;
         $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
-
         my $hour = $dt->hour();
         my $minute = $dt->minute();
         my $second = $dt->second();
@@ -99,6 +107,16 @@ sub get_surplus_between_next_dt {
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $surplus = (10 * $n_times) - ($second % (10 * $n_times));
         }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have time_cycle_type field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $surplus;
 }
@@ -106,8 +124,8 @@ sub get_surplus_between_next_dt {
 sub get_seconds_based_on_cycle_type {
     my ($param) = @_;
     my $seconds = -1;
-    if ((ref $param eq "HASH") && (exists $param->{type})) {
-        my $type = $param->{type};
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type})) {
+        my $type = $param->{time_cycle_type};
         my $n_times = 1;
         $n_times = $param->{n_times} if ((exists $param->{n_times}) && ($param->{n_times} > 1));
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
@@ -123,6 +141,13 @@ sub get_seconds_based_on_cycle_type {
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $seconds = 10 * $n_times;
         }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "first argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "first argument must have time_cycle_type field\n";
+        }
     }
     return $seconds;
 }
@@ -130,7 +155,7 @@ sub get_seconds_based_on_cycle_type {
 sub get_prev_dt {
     my ($dt, $param) = @_;
     my $next_dt = "";
-    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (ref $dt eq "DateTime")) {
         $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
         $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
         my $tmp_dt = $dt->clone();
@@ -141,7 +166,18 @@ sub get_prev_dt {
             $diff_of_right_time = get_seconds_based_on_cycle_type($param);
         }
         if ($diff_of_right_time >= 0) {
-            $next_dt = $tmp_dt->subtract(seconds => $diff_of_right_time);
+            $tmp_dt->subtract(seconds => $diff_of_right_time);
+            $next_dt = $tmp_dt;
+        }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have time_cycle_type field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
         }
     }
     return $next_dt;
@@ -150,7 +186,7 @@ sub get_prev_dt {
 sub get_next_dt {
     my ($dt, $param) = @_;
     my $next_dt = "";
-    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (ref $dt eq "DateTime")) {
         $param->{n_times} = 1 unless ((exists $param->{n_times}) && ($param->{n_times} > 0));
         $param->{shift_seconds} = 0 unless ((exists $param->{shift_seconds}) && ($param->{shift_seconds} > 0));
         my $tmp_dt = $dt->clone();
@@ -163,6 +199,16 @@ sub get_next_dt {
         if ($diff_of_right_time >= 0) {
             $next_dt = $tmp_dt->add(seconds => $diff_of_right_time);
         }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have time_cycle_type field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $next_dt;
 }
@@ -174,6 +220,10 @@ sub dt_to_ymdh {
         my $ymd = $dt->ymd("");
         my $h = substr($dt->hms(""), 0, 2);
         $str = $ymd.$h;
+    } else {
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $str;
 }
@@ -185,6 +235,10 @@ sub dt_to_yyyymmddhhm {
         my $ymd = $dt->ymd("");
         my $hhm = substr($dt->hms(""), 0, 3);
         $str = $ymd.$hhm;
+    } else {
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $str;
 }
@@ -196,6 +250,10 @@ sub dt_to_ymdhm {
         my $ymd = $dt->ymd("");
         my $hm = substr($dt->hms(""), 0, 4);
         $str = $ymd.$hm;
+    } else {
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $str;
 }
@@ -207,6 +265,10 @@ sub dt_to_yyyymmddhhmms {
         my $ymd = $dt->ymd("");
         my $hhmms = substr($dt->hms(""), 0, 5);
         $str = $ymd.$hhmms;
+    } else {
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $str;
 }
@@ -218,6 +280,10 @@ sub dt_to_ymdhms {
         my $ymd = $dt->ymd("");
         my $hms = $dt->hms("");
         $str =  $ymd.$hms;
+    } else {
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $str;
 }
@@ -225,8 +291,8 @@ sub dt_to_ymdhms {
 sub get_int_time_stamp {
     my ($dt, $param) = @_;
     my $stamp = "";
-    if ((ref $param eq "HASH") && (exists $param->{type}) && (ref $dt eq "DateTime")) {
-        my $type = $param->{type};
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (ref $dt eq "DateTime")) {
+        my $type = $param->{time_cycle_type};
         if (($type eq "daily") || ($type eq "ymd") || ($type eq "yyyymmdd")) {
             $stamp = $dt->ymd("");
         } elsif (($type eq "hourly") || ($type eq "ymdh") || ($type eq "yyyymmddhh")) {
@@ -239,6 +305,16 @@ sub get_int_time_stamp {
             $stamp = dt_to_yyyymmddhhmms($dt);
         } elsif (($type eq "secondly") || ($type eq "ymdhms") || ($type eq "yyyymmddhhmmss")) {
             $stamp = dt_to_ymdhms($dt);
+        }
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have time_cycle_type field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
         }
     }
     return $stamp;
@@ -256,6 +332,13 @@ sub is_first_dt_future {
         } elsif ($dt1_epoch == $dt2_epoch) {
             $is_future = 0;
         }
+    } else {
+        if (!(ref $dt1 eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
+        if (!(ref $dt1 eq "DateTime")) {
+            print "second argument must be DateTime object\n";
+        }
     }
     return $is_future;
 }
@@ -268,6 +351,16 @@ sub add_delay_seconds_to_dt {
         my $tmp_dt = $dt->clone();
         $tmp_dt->subtract(seconds => $delay_seconds) if ($delay_seconds > 0);
         $result_dt = $tmp_dt;
+    } else {
+        if (!(ref $param eq "HASH")) {
+            print "second argument must be HASH ref\n";
+        }
+        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
+            print "second argument must have delay_seconds field\n";
+        }
+        if (!(ref $dt eq "DateTime")) {
+            print "first argument must be DateTime object\n";
+        }
     }
     return $result_dt;
 }
