@@ -52,13 +52,14 @@ my $app_conf = << "__APP_JSON__";
             },
             "max_result_num" : 30,
             "platform" : "jubatus",
-            "delay_to_process" : 600,
-            "file_split_type" : "10min",
+            "delay_seconds" : 600,
+            "time_cycle_type" : "10min",
             "wait_n_times" : "1",
             "is_daily_directory" : "1",
             "label" : {
                 "column_name" : "id",
             },
+            "start_ymdhms" : "2022-10-10T23:59:59",
         }
     },
 }
@@ -243,6 +244,49 @@ subtest 'Test to get the module parameters set' => sub {
     };
 };
 
+subtest 'Test to get initial DateTime object' => sub {
+    subtest 'Test _get_initial_dt()' => sub {
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $input_dt = $h->_get_initial_dt($module_param) if (exists $module_param->{input});
+                is ($input_dt->ymd()." ".$input_dt->hms(), "2022-10-10 23:39:59", "Make check 10 minutes + 600 sec before of 2022-10-10 23:59:59 is 2022-10-10 23:39:59");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                $module_param->{is_cut_surplus} = 1;
+                my $input_dt = $h->_get_initial_dt($module_param) if (exists $module_param->{input});
+                is ($input_dt->ymd()." ".$input_dt->hms(), "2022-10-10 23:40:00", "Make check to delete surplus of 10 minutes cycle and 600 sec before of 2022-10-10 23:59:59 is 2022-10-10 23:40:00");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+    };
+};
 
 
 #            print Dump $h;
