@@ -92,14 +92,14 @@ sub _get_initial_dt {
     my $dt = "";
     if (ref $param eq "HASH") {
         if (exists $param->{start_ymdhms}) {
-            $dt = Hellow::DateTime::get_dt($param->{start_ymdhms});
+            $dt = Hallow::DateTime::get_dt($param->{start_ymdhms});
         } else {
-            $dt = Hellow::DateTime::get_dt();
+            $dt = Hallow::DateTime::get_dt();
         }
         if (ref $dt eq "DateTime") {
-            $dt = Hellow::DateTime::get_prev_dt($dt, $param);
+            $dt = Hallow::DateTime::get_prev_dt($dt, $param);
             if (ref $dt eq "DateTime") {
-                $dt = Hellow::DateTime::add_delay_seconds_to_dt($dt, $param);
+                $dt = Hallow::DateTime::add_delay_seconds_to_dt($dt, $param);
             } else {
                 warn "Can't get DateTime object from get_prev_dt()";
             }
@@ -129,9 +129,9 @@ sub sequence {
                     my $dt = $self->_get_initial_dt($module_param);
                     $self->{current_dt} = $dt;
                     if (exists $next_dt_map{$module_name}) {
-                        next unless (Hellow::DateTime::is_first_dt_future($dt, $next_dt_map{$module_name}));
+                        next unless (Hallow::DateTime::is_first_dt_future($dt, $next_dt_map{$module_name}));
                         if ((exists $module_param->{end_ymdhms}) && (
-                            Hellow::DateTime::is_first_dt_future($dt, Hellow::DateTime::get_dt($module_param->{end_ymdhms})
+                            Hallow::DateTime::is_first_dt_future($dt, Hellow::DateTime::get_dt($module_param->{end_ymdhms})
                                                              ))) {
                             infof "Exit sequence() because time_stamp > module_param->{end_ymdhms}";
                             $is_last_of_sequence = 1; last;
