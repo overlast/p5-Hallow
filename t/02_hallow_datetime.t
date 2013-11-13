@@ -102,38 +102,38 @@ subtest 'Test a generator of DateTime object' => sub {
 subtest 'Test to return the boundary of cyclical event' => sub {
     subtest 'Test get_seconds_based_on_cycle_type()' => sub {
         my $unixtime = time();
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "daily",}), 86400, "Make check a day is 86400 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "ymd",}), 86400, "Make check a day is 86400 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmdd",}), 86400, "Make check a day is 86400 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "daily",}), 86400, "Make check a day is 86400 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "ymd",}), 86400, "Make check a day is 86400 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmdd",}), 86400, "Make check a day is 86400 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "hourly",}), 3600, "Make check a hour is 3600 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "ymdh",}), 3600, "Make check a hour is 3600 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmddhh",}), 3600, "Make check a hour is 3600 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "hourly",}), 3600, "Make check a hour is 3600 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "ymdh",}), 3600, "Make check a hour is 3600 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmddhh",}), 3600, "Make check a hour is 3600 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "10min",}), 600, "Make check 10 minute is 600 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmddhhm",}), 600, "Make check 10 minute is 600 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "10min",}), 600, "Make check 10 minute is 600 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmddhhm",}), 600, "Make check 10 minute is 600 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "minutely",}), 60, "Make check a minute is 60 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "ymdhm",}), 60, "Make check a minute is 60 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmddhhmm",}), 60, "Make check a minute is 60 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "minutely",}), 60, "Make check a minute is 60 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "ymdhm",}), 60, "Make check a minute is 60 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmddhhmm",}), 60, "Make check a minute is 60 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "10sec",}), 10, "Make check a 10 seconds is 10 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmddhhmms",}), 10, "Make check a hour is 10 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "10sec",}), 10, "Make check a 10 seconds is 10 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmddhhmms",}), 10, "Make check a hour is 10 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "secondly",}), 1, "Make check a second is 1 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "ymdhms",}), 1, "Make check a second is 1 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "yyyymmddhhmmss",}), 1, "Make check a second is 1 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "secondly",}), 1, "Make check a second is 1 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "ymdhms",}), 1, "Make check a second is 1 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "yyyymmddhhmmss",}), 1, "Make check a second is 1 seconds");
 
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "daily", "n_times" => 2}), 172800, "Make check a day is 172800 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "hourly", "n_times" => 2}), 7200, "Make check a hour is 7200 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "10min", "n_times" => 2}), 1200, "Make check 10 minute is 1200 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "minutely", "n_times" => 2}), 120, "Make check a minute is 120 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "10sec", "n_times" => 2}), 20, "Make check a 10 seconds is 20 seconds");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "secondly", "n_times" => 2}), 2, "Make check a second is 2 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "daily", "n_times" => 2}), 172800, "Make check a day is 172800 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "hourly", "n_times" => 2}), 7200, "Make check a hour is 7200 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "10min", "n_times" => 2}), 1200, "Make check 10 minute is 1200 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "minutely", "n_times" => 2}), 120, "Make check a minute is 120 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "10sec", "n_times" => 2}), 20, "Make check a 10 seconds is 20 seconds");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "secondly", "n_times" => 2}), 2, "Make check a second is 2 seconds");
 
         is (Hallow::DateTime::get_seconds_based_on_cycle_type(["array"]), -1, "Make check to get -1 as an error value");
         is (Hallow::DateTime::get_seconds_based_on_cycle_type({"typo" => "",}), -1, "Make check to get -1 as an error value");
-        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"type" => "",}), -1, "Make check to get -1 as an error value");
+        is (Hallow::DateTime::get_seconds_based_on_cycle_type({"time_cycle_type" => "",}), -1, "Make check to get -1 as an error value");
     };
 
     subtest 'Test get_surplus_between_next_dt()' => sub {
@@ -141,73 +141,73 @@ subtest 'Test to return the boundary of cyclical event' => sub {
             my $ymdhms = "2022-10-10 10:10:10";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
             my $type = "ymdhms";
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms"}), 1, "Make check a surplus between 10:10:10 and 10:10:11");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms", "n_times" => 2}),2, "Make check a surplus between 10:10:10 and 10:10:12");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms"}), 1, "Make check a surplus between 10:10:10 and 10:10:11");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms", "n_times" => 2}),2, "Make check a surplus between 10:10:10 and 10:10:12");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms"}), 10, "Make check a surplus between 10:10:10 and 10:10:20");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 2}),10, "Make check a surplus between 10:10:10 and 10:10:20");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 3}),20, "Make check a surplus between 10:10:10 and 10:10:30");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms"}), 10, "Make check a surplus between 10:10:10 and 10:10:20");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 2}),10, "Make check a surplus between 10:10:10 and 10:10:20");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 3}),20, "Make check a surplus between 10:10:10 and 10:10:30");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm"}), 50, "Make check a surplus between 10:10:10 and 10:11:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm", "n_times" => 2}),110, "Make check a surplus between 10:10:10 and 10:12:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm"}), 50, "Make check a surplus between 10:10:10 and 10:11:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm", "n_times" => 2}),110, "Make check a surplus between 10:10:10 and 10:12:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm"}), 590, "Make check a surplus between 10:10:10 and 10:20:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 2}),590, "Make check a surplus between 10:10:10 and 10:20:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 3}),1190, "Make check a surplus between 10:10:10 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm"}), 590, "Make check a surplus between 10:10:10 and 10:20:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 2}),590, "Make check a surplus between 10:10:10 and 10:20:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 3}),1190, "Make check a surplus between 10:10:10 and 10:30:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh"}), 2990, "Make check a surplus between 10:10:10 and 11:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh", "n_times" => 2}),6590, "Make check a surplus between 10:10:10 and 12:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh"}), 2990, "Make check a surplus between 10:10:10 and 11:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh", "n_times" => 2}),6590, "Make check a surplus between 10:10:10 and 12:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd"}), 49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-11 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd", "n_times" => 2}),49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-12 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd"}), 49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-11 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd", "n_times" => 2}),49790, "Make check a surplus between 2022-10-10 10:10:10 and 2022-10-12 00:00:00");
         }
 
         {
             my $ymdhms = "2022-10-10 23:59:59";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
             my $type = "ymdhms";
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 3}),1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 3}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 3}),1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 3}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd"}), 1, "Make check a surplus between 23:59:59 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd", "n_times" => 2}),1, "Make check a surplus between 23:59:59 and 00:00:00");
         }
 
         {
             my $ymdhms = "2022-10-10 00:00:00";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
             my $type = "ymdhms";
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms"}), 1, "Make check a surplus between 00:00:00 and 00:00:01");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhms", "n_times" => 2}),2, "Make check a surplus between 00:00:00 and 00:00:02");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms"}), 1, "Make check a surplus between 00:00:00 and 00:00:01");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhms", "n_times" => 2}),2, "Make check a surplus between 00:00:00 and 00:00:02");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms"}), 10, "Make check a surplus between 00:00:00 and 00:00:10");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 2}),20, "Make check a surplus between 00:00:00 and 00:00:20");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhmms", "n_times" => 3}),30, "Make check a surplus between 00:00:00 and 00:00:30");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms"}), 10, "Make check a surplus between 00:00:00 and 00:00:10");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 2}),20, "Make check a surplus between 00:00:00 and 00:00:20");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhmms", "n_times" => 3}),30, "Make check a surplus between 00:00:00 and 00:00:30");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm"}), 60, "Make check a surplus between 00:00:00 and 00:01:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "ymdhm", "n_times" => 2}),120, "Make check a surplus between 00:00:00 and 00:02:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm"}), 60, "Make check a surplus between 00:00:00 and 00:01:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "ymdhm", "n_times" => 2}),120, "Make check a surplus between 00:00:00 and 00:02:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm"}), 600, "Make check a surplus between 00:00:00 and 00:10:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 2}),1200, "Make check a surplus between 00:00:00 and 00:20:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhhm", "n_times" => 3}),1800, "Make check a surplus between 00:00:00 and 00:30:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm"}), 600, "Make check a surplus between 00:00:00 and 00:10:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 2}),1200, "Make check a surplus between 00:00:00 and 00:20:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhhm", "n_times" => 3}),1800, "Make check a surplus between 00:00:00 and 00:30:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh"}), 3600, "Make check a surplus between 00:00:00 and 01:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmddhh", "n_times" => 2}),7200, "Make check a surplus between 00:00:00 and 02:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh"}), 3600, "Make check a surplus between 00:00:00 and 01:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmddhh", "n_times" => 2}),7200, "Make check a surplus between 00:00:00 and 02:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd"}), 86400, "Make check a surplus between 00:00:00 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"type"=> "yyyymmdd", "n_times" => 2}), 86400, "Make check a surplus between 00:00:00 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd"}), 86400, "Make check a surplus between 00:00:00 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type"=> "yyyymmdd", "n_times" => 2}), 86400, "Make check a surplus between 00:00:00 and 00:00:00");
         }
 
         {
@@ -218,7 +218,7 @@ subtest 'Test to return the boundary of cyclical event' => sub {
             is (Hallow::DateTime::get_surplus_between_next_dt($dt), -1, "Make check to get -1 as an error value");
             is (Hallow::DateTime::get_surplus_between_next_dt($dt, ["array"]), -1, "Make check to get -1 as an error value");
             is (Hallow::DateTime::get_surplus_between_next_dt($dt, {"typo" => "",}), -1, "Make check to get -1 as an error value");
-            is (Hallow::DateTime::get_surplus_between_next_dt($dt, {"type" => "",}), -1, "Make check to get -1 as an error value");
+            is (Hallow::DateTime::get_surplus_between_next_dt($dt, {"time_cycle_type" => "",}), -1, "Make check to get -1 as an error value");
         }
     };
 
@@ -226,77 +226,77 @@ subtest 'Test to return the boundary of cyclical event' => sub {
         {
             my $ymdhms = "2022-10-10 10:30:30";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms"}), 1, "Make check a surplus between 10:30:30 and 10:30:29");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms", "n_times" => 2}), 2, "Make check a surplus between 10:30:30 and 10:30:28");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms"}), 1, "Make check a surplus between 10:30:30 and 10:30:29");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms", "n_times" => 2}), 2, "Make check a surplus between 10:30:30 and 10:30:28");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms"}),  10, "Make check a surplus between 10:30:30 and 10:30:20");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 2}), 10, "Make check a surplus between 10:30:30 and 10:30:20");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 3}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms"}),  10, "Make check a surplus between 10:30:30 and 10:30:20");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 2}), 10, "Make check a surplus between 10:30:30 and 10:30:20");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 3}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm"}),  30, "Make check a surplus between 10:30:30 and 10:30:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm", "n_times" => 2}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm", "n_times" => 4}), 150, "Make check a surplus between 10:30:30 and 10:28:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm"}),  30, "Make check a surplus between 10:30:30 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm", "n_times" => 2}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm", "n_times" => 4}), 150, "Make check a surplus between 10:30:30 and 10:28:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm"}),  30, "Make check a surplus between 10:30:30 and 10:30:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 2}), 630, "Make check a surplus between 10:30:30 and 10:20:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 3}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm"}),  30, "Make check a surplus between 10:30:30 and 10:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 2}), 630, "Make check a surplus between 10:30:30 and 10:20:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 3}), 30, "Make check a surplus between 10:30:30 and 10:30:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh"}),  1830, "Make check a surplus between 10:30:30 and 10:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh", "n_times" => 2}), 1830, "Make check a surplus between 10:30:30 and 10:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh", "n_times" => 3}), 5430, "Make check a surplus between 10:30:30 and 9:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh"}),  1830, "Make check a surplus between 10:30:30 and 10:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh", "n_times" => 2}), 1830, "Make check a surplus between 10:30:30 and 10:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh", "n_times" => 3}), 5430, "Make check a surplus between 10:30:30 and 9:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd"}),  37830, "Make check a surplus between 2022-10-10 10:30:30 and 2022-10-10 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd", "n_times" => 2}), 37830, "Make check a surplus between 2022-10-10 10:30:30 and 2022-10-10 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd"}),  37830, "Make check a surplus between 2022-10-10 10:30:30 and 2022-10-10 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd", "n_times" => 2}), 37830, "Make check a surplus between 2022-10-10 10:30:30 and 2022-10-10 00:00:00");
         }
 
         {
             my $ymdhms = "2022-10-11 00:00:00";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
             my $type = "ymdhms";
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms"}),  1, "Make check a surplus between 00:00:00 and 23:59:59");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms", "n_times" => 2}), 2, "Make check a surplus between 00:00:00 an 23:59:58");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms"}),  1, "Make check a surplus between 00:00:00 and 23:59:59");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms", "n_times" => 2}), 2, "Make check a surplus between 00:00:00 an 23:59:58");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms"}),  10, "Make check a surplus between 00:00:00 an 23:59:50");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 2}), 20, "Make check a surplus between 00:00:00 an 23:59:40");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 3}), 30, "Make check a surplus between 00:00:00 an 23:59:30");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms"}),  10, "Make check a surplus between 00:00:00 an 23:59:50");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 2}), 20, "Make check a surplus between 00:00:00 an 23:59:40");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 3}), 30, "Make check a surplus between 00:00:00 an 23:59:30");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm"}), 60, "Make check a surplus between 00:00:00 an 23:59:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm", "n_times" => 2}), 120, "Make check a surplus between 00:00:00 an 23:58:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm"}), 60, "Make check a surplus between 00:00:00 an 23:59:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm", "n_times" => 2}), 120, "Make check a surplus between 00:00:00 an 23:58:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm"}), 600, "Make check a surplus between 00:00:00 an 23:50:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 2}), 1200, "Make check a surplus between 00:00:00 an 23:40:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 3}), 1800, "Make check a surplus between 00:00:00 an 23:30:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm"}), 600, "Make check a surplus between 00:00:00 an 23:50:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 2}), 1200, "Make check a surplus between 00:00:00 an 23:40:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 3}), 1800, "Make check a surplus between 00:00:00 an 23:30:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh"}), 3600, "Make check a surplus between 00:00:00 an 23:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh", "n_times" => 2}), 7200, "Make check a surplus between 00:00:00 an 22:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh"}), 3600, "Make check a surplus between 00:00:00 an 23:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh", "n_times" => 2}), 7200, "Make check a surplus between 00:00:00 an 22:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd"}), 86400, "Make check a surplus between 2022-10-11 00:00:00 and 2022-10-10 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd", "n_times" => 2}), 86400, "Make check a surplus between 2022-10-11 00:00:00 and 2022-10-10 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd"}), 86400, "Make check a surplus between 2022-10-11 00:00:00 and 2022-10-10 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd", "n_times" => 2}), 86400, "Make check a surplus between 2022-10-11 00:00:00 and 2022-10-10 00:00:00");
         }
 
         {
             my $ymdhms = "2022-10-10 00:00:01";
             my $dt = Hallow::DateTime::get_dt($ymdhms);
             my $type = "ymdhms";
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhms", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhms", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhmms", "n_times" => 3}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhmms", "n_times" => 3}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "ymdhm", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "ymdhm", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhhm", "n_times" => 3}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhhm", "n_times" => 3}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmddhh", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmddhh", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
 
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
-            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "yyyymmdd", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd"}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
+            is(Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "yyyymmdd", "n_times" => 2}), 1, "Make check a surplus between 00:00:01 and 00:00:00");
         }
 
         {
@@ -307,7 +307,7 @@ subtest 'Test to return the boundary of cyclical event' => sub {
             is (Hallow::DateTime::get_surplus_between_prev_dt($dt), -1, "Make check to get -1 as an error value");
             is (Hallow::DateTime::get_surplus_between_prev_dt($dt, ["array"]), -1, "Make check to get -1 as an error value");
             is (Hallow::DateTime::get_surplus_between_prev_dt($dt, {"typo" => "",}), -1, "Make check to get -1 as an error value");
-            is (Hallow::DateTime::get_surplus_between_prev_dt($dt, {"type" => "",}), -1, "Make check to get -1 as an error value");
+            is (Hallow::DateTime::get_surplus_between_prev_dt($dt, {"time_cycle_type" => "",}), -1, "Make check to get -1 as an error value");
         }
     };
 
@@ -318,41 +318,41 @@ subtest 'Test to return a DateTime object of next cycle' => sub {
         my $ymdhms = "2022-10-10 00:00:01";
         my $dt = Hallow::DateTime::get_dt($ymdhms);
         my $unixtime = time();
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "daily",})->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "daily",})->hms(""), "000001", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "daily",})->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "daily",})->hms(""), "000001", "Make check a day after of 2022-10-10 00:00:01 is 2022-10-11 00:00:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221011", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-11 00:00:00");
 
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "hourly",})->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "hourly",})->hms(""), "010001", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "010000", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "hourly",})->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "hourly",})->hms(""), "010001", "Make check an hour after of 2022-10-10 00:00:01 is 2022-10-10 01:00:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "010000", "Make check an hour after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 01:00:00");
 
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "minutely",})->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "minutely",})->hms(""), "000101", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "000100", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "minutely",})->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "minutely",})->hms(""), "000101", "Make check one minute after of 2022-10-10 00:00:01 is 2022-10-10 00:01:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "000100", "Make check one minute after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:01:00");
 
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10min",})->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10min",})->hms(""), "001001", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "001000", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10min",})->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10min",})->hms(""), "001001", "Make check 10 minutes after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "001000", "Make check 10 minutes after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:10:00");
 
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "secondly",})->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "secondly",})->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "secondly",})->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "secondly",})->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 is 2022-10-10 00:00:02");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "000002", "Make check one second after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:02");
 
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10sec",})->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "10sec",})->hms(""), "000011", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:00:11");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
-        is ((Hallow::DateTime::get_next_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "000010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10sec",})->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:10:01");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10sec",})->hms(""), "000011", "Make check 10 seconds after of 2022-10-10 00:00:01 is 2022-10-10 00:00:11");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
+        is ((Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "000010", "Make check 10 seconds after of 2022-10-10 00:00:01 with cutting surplus is 2022-10-10 00:00:10");
 
         is (Hallow::DateTime::get_next_dt(), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_next_dt($dt), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_next_dt($dt, ["array"]), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_next_dt($dt, {"typo" => "",}), "", "Make check to get null character string as an error value");
-        is (Hallow::DateTime::get_next_dt($dt, {"type" => "",}), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_next_dt($dt, {"time_cycle_type" => "",}), "", "Make check to get null character string as an error value");
     };
 };
 
@@ -361,41 +361,41 @@ subtest 'Test to return a DateTime object of prev cycle' => sub {
         my $ymdhms = "2022-10-09 23:59:59";
         my $dt = Hallow::DateTime::get_dt($ymdhms);
         my $unixtime = time();
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "daily",})->ymd(""), "20221008", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "daily",})->hms(""), "235959", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "daily",})->ymd(""), "20221008", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "daily",})->hms(""), "235959", "Make check a day before of 2022-10-09 23:59:59 is 2022-10-08 23:59:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "daily", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "daily", "is_cut_surplus" => 1 }))->hms(""), "000000", "Make check a day before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 00:00:00");
 
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly",})->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 23:59:59");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly",})->hms(""), "225959", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 22:59:59");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "230000", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "hourly",})->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 23:59:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "hourly",})->hms(""), "225959", "Make check an hour before of 2022-10-09 23:59:59 is 2022-10-09 22:59:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "hourly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "hourly", "is_cut_surplus" => 1 }))->hms(""), "230000", "Make check an hour before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:00:00");
 
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely",})->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely",})->hms(""), "235859", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "235900", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "minutely",})->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "minutely",})->hms(""), "235859", "Make check one minute before of 2022-10-09 23:59:59 is 2022-10-09 23:58:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "minutely", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "minutely", "is_cut_surplus" => 1 }))->hms(""), "235900", "Make check one minute before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:00");
 
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10min",})->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10min",})->hms(""), "234959", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "235000", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10min",})->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10min",})->hms(""), "234959", "Make check 10 minutes before of 2022-10-09 23:59:59 is 2022-10-09 23:49:59");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10min", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10min", "is_cut_surplus" => 1 }))->hms(""), "235000", "Make check 10 minutes before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:50:00");
 
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly",})->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly",})->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "secondly",})->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "secondly",})->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 is 2022-10-09 23:59:58");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "secondly", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "secondly", "is_cut_surplus" => 1 }))->hms(""), "235958", "Make check one second before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:58");
 
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec",})->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec",})->hms(""), "235949", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
-        is ((Hallow::DateTime::get_prev_dt($dt, {"type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "235950", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10sec",})->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10sec",})->hms(""), "235949", "Make check 10 seconds before of 2022-10-09 23:59:59 is 2022-10-09 23:59:49");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10sec", "is_cut_surplus" => 1}))->ymd(""), "20221009", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
+        is ((Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "10sec", "is_cut_surplus" => 1 }))->hms(""), "235950", "Make check 10 seconds before of 2022-10-09 23:59:59 with cutting surplus is 2022-10-09 23:59:50");
 
         is (Hallow::DateTime::get_prev_dt(), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_prev_dt($dt), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_prev_dt($dt, ["array"]), "", "Make check to get null character string as an error value");
         is (Hallow::DateTime::get_prev_dt($dt, {"typo" => "",}), "", "Make check to get null character string as an error value");
-        is (Hallow::DateTime::get_prev_dt($dt, {"type" => "",}), "", "Make check to get null character string as an error value");
+        is (Hallow::DateTime::get_prev_dt($dt, {"time_cycle_type" => "",}), "", "Make check to get null character string as an error value");
     };
 };
 
@@ -434,16 +434,16 @@ subtest 'Test to return int time stamp string using DateTime object and string t
     my $dt = Hallow::DateTime::get_dt($ymdhms);
 
     subtest 'Test get_int_time_stamp()' => sub {
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymd"}), "20221009", "Make check to get YYYYMMDD string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdh"}), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "yyyymmddhhm"}), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdhm"}), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "yyyymmddhhmms"}), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
-        is (Hallow::DateTime::get_int_time_stamp($dt, {"type" => "ymdhms"}), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "ymd"}), "20221009", "Make check to get YYYYMMDD string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "ymdh"}), "2022100923", "Make check to get YYYYMMDDHH string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "yyyymmddhhm"}), "20221009235", "Make check to get YYYYMMDDHHM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "ymdhm"}), "202210092359", "Make check to get YYYYMMDDHHMM string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "yyyymmddhhmms"}), "2022100923595", "Make check to get YYYYMMDDHHMMS string using DateTime object");
+        is (Hallow::DateTime::get_int_time_stamp($dt, {"time_cycle_type" => "ymdhms"}), "20221009235959", "Make check to get YYYYMMDDHHMMSS string using DateTime object");
         is (Hallow::DateTime::get_int_time_stamp($dt), "", "Make check to get null character string as no type string error message");
         is (Hallow::DateTime::get_int_time_stamp($dt, ""), "", "Make check to get null character string as no type string error message");
-        is (Hallow::DateTime::get_int_time_stamp("", {"type" => "ymd"}), "", "Make check to get null character string as no DateTime object error message");
-        is (Hallow::DateTime::get_int_time_stamp({"type" => "ymd"}, $dt), "", "Make check to get null character string as no DateTime object error message");
+        is (Hallow::DateTime::get_int_time_stamp("", {"time_cycle_type" => "ymd"}), "", "Make check to get null character string as no DateTime object error message");
+        is (Hallow::DateTime::get_int_time_stamp({"time_cycle_type" => "ymd"}, $dt), "", "Make check to get null character string as no DateTime object error message");
     };
 };
 
