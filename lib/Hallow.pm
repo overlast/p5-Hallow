@@ -9,7 +9,9 @@ our $VERSION = "0.0.0_01";
 use utf8;
 use autodie;
 
-use Log::Minimal qw/debugf infof warnf critf/;
+use constant HALLOW_DEBUG => $ENV{HALLOW_DEBUG};
+use Log::Minimal qw/debugf infof warnf critf/; # $ENV{LM_DEBUG}
+use Log::Minimal::Indent; # call indent_log_scope("any", "MUTE");
 local $Log::Minimal::AUTODUMP = 1;
 local $Log::Minimal::COLOR = 1;
 local $Log::Minimal::LOG_LEVEL = "DEBUG";
@@ -21,7 +23,6 @@ use JSON;
 
 use Jubatus;
 
-use Project::Libs;
 use Hallow::Util;
 use Hallow::DateTime;
 use Hallow::Data::Handle;
@@ -30,24 +31,36 @@ use Hallow::Data::Dump;
 sub new {
     my ($class, $param) = @_;
     my $hash = {};
-    $hash = $param if ((defined $param) && (ref $param eq "HASH"));
+    if (defined $param) {
+        if (ref $param eq "HASH") {
+            $hash = $param;
+        } else {
+            warnf "First argument should be define as HASH ref" if (HALLOW_DEBUG);
+        }
+    }
     $hash->{base_dir_path} = Hallow::Util::get_base_dir_path();
     if ((exists $hash->{config_file_path}) && (-f $hash->{config_file_path})) {
         $hash->{config} = Hallow::Util::get_config($hash->{config_file_path});
     } else {
-        warnf "hash->{config_file_path} should be define the path to configure file";
+        if (HALLOW_DEBUG) {
+            warnf "hash->{config_file_path} should be define" unless (exists $hash->{config_file_path});
+            warnf "hash->{config_file_path} should be define as the path to configure file" unless (-f $hash->{config_file_path});
+        }
     }
     return bless $hash, $class;
 }
 
 sub ignition {
     my ($self) = @_;
-    my $message = "";
+    my $message = 0;
     if ((exists $self->{config}) && (ref $self->{config} eq "HASH")) {
         $self->sequence();
+        $message = 1;
     } else {
-        $message = "self->{config} is not defined" unless ($message);
-        warnf $message;
+        if (HALLOW_DEBUG) {
+            warnf "self->{config} should be exists" unless (exists $self->{config});
+            warnf "self->{config} should be Hash ref" unless (ref $self->{config} eq "HASH");
+        }
     }
     return $message;
 }
@@ -60,13 +73,13 @@ sub _get_recipe_map {
             if (ref $self->{config}->{recipe}->{$self->{recipe_name}} eq "ARRAY") {
                 $result = $self->{config}->{recipe}->{$self->{recipe_name}};
             } else {
-                warnf "self->config->recipe->recipe_name is not ARRAY ref";
+                warnf "self->config->recipe->recipe_name is not ARRAY ref" if (HALLOW_DEBUG);
             }
         } else {
-            warnf "Can't get recipe from self->config->recipe->recipe_name";
+            warnf "Can't get recipe from self->config->recipe->recipe_name" if (HALLOW_DEBUG);
         }
     } else {
-        warnf "Can't get self->recipe_name";
+        warnf "Can't get self->recipe_name" if (HALLOW_DEBUG);
     }
     return $result;
 }
@@ -79,10 +92,10 @@ sub _get_module_param {
         if ((defined $module_name) && ($module_name) && (exists $self->{config}->{$recipe_name}->{$module_name})) {
             $param = $self->{config}->{$recipe_name}->{$module_name};
         } else {
-            warnf "Can't get module parameter from self->config->recipe_name->module_name";
+            warnf "Can't get module parameter from self->config->recipe_name->module_name" if (HALLOW_DEBUG);
         }
     } else {
-        warnf "Can't get self->recipe_name";
+        warnf "Can't get self->recipe_name" if (HALLOW_DEBUG);
     }
     return $param;
 }
@@ -101,13 +114,13 @@ sub _get_initial_dt {
             if (ref $dt eq "DateTime") {
                 $dt = Hallow::DateTime::add_delay_seconds_to_dt($dt, $param);
             } else {
-                warn "Can't get DateTime object from get_prev_dt()";
+                warn "Can't get DateTime object from get_prev_dt()" if (HALLOW_DEBUG);
             }
         } else {
-            warn "Can't get DateTime object from get_dt()";
+            warn "Can't get DateTime object from get_dt()" if (HALLOW_DEBUG);
         }
     } else {
-        warn "Can't get parameters to initialize DateTime object";
+        warn "Can't get parameters to initialize DateTime object" if (HALLOW_DEBUG);
     }
     return $dt;
 }
@@ -140,7 +153,7 @@ sub sequence {
                         if (ref $next_dt eq "DateTime") {
                             $next_dt_map{$module_name} = $next_dt;
                         } else {
-                            warn "Can't get DateTime object by get_next_dt()";
+                            warn "Can't get DateTime object by get_next_dt()" if (HALLOW_DEBUG);
                             $is_last_of_sequence = 1; last;
                         }
                         infof ("start() to process...");
@@ -152,7 +165,8 @@ sub sequence {
                 }
             }
             if ($is_last_of_sequence) {
-                warnf "exit sequence() ...";  return;
+                warnf "exit sequence() ..." if (HALLOW_DEBUG);
+                return;
             }
         }
     };
@@ -167,12 +181,12 @@ sub _get_module_input_param {
     my $param = "";
     if (ref $module_param eq "HASH") {
         if (exists $module_param->{input}) {
-            my $param = $module_param->{input};
+            $param = $module_param->{input};
         } else {
-            warnf "first argument must have input field";
+            warnf "first argument must have input field" if (HALLOW_DEBUG);
         }
     } else {
-        warnf "first argument must be HASH ref";
+        warnf "first argument must be HASH ref" if (HALLOW_DEBUG);
     }
     return $param;
 }
@@ -182,12 +196,12 @@ sub _get_module_output_param {
     my $param = "";
     if (ref $module_param eq "HASH") {
         if (exists $module_param->{output}) {
-            my $param = $module_param->{output};
+            $param = $module_param->{output};
         } else {
-            warnf "first argument must have output field";
+            warnf "first argument must have output field" if (HALLOW_DEBUG);
         }
     } else {
-        warnf "first argument must be HASH ref";
+        warnf "first argument must be HASH ref" if (HALLOW_DEBUG);
     }
     return $param;
 }
@@ -203,20 +217,18 @@ sub _get_module_input_source {
                 if (ref $from_param eq "HASH") {
                     my $from_type = $from_param->{type};
                     if ($from_type eq "dump_file") {
-                        my $ext = "";
-                        $ext = $from_param->{file_ext} if (exists $from_param->{file_ext});
                         my $tmp_dir_path = Hallow::Data::Dump::get_dump_dir_path($from_param, $self->{base_dir_path}, $self->{dt});
-                        my $tmp_file_path = Hallow::Data::Dump::get_dump_file_path($from_param, $tmp_dir_path, $self->{dt}, $ext);
+                        my $tmp_file_path = Hallow::Data::Dump::get_dump_file_path($from_param, $tmp_dir_path, $self->{dt});
                         if (-f $tmp_file_path) {
                             my $tmp = [$from_type, $tmp_file_path];
                             push @sources, $tmp;
-                        } else { warnf "tmp_file_path should be there"; }
+                        } else { warnf "tmp_file_path should be there" if (HALLOW_DEBUG); }
                     } elsif ($from_type eq "db") {
-                    } else { warnf "Undefined from_type : $from_type"; }
-                } else { warnf "from_param should be HASH ref"; }
-            } else { warnf "input_param->{$from} should be defined"; }
+                    } else { warnf "Undefined from_type : $from_type" if (HALLOW_DEBUG); }
+                } else { warnf "from_param should be HASH ref" if (HALLOW_DEBUG); }
+            } else { warnf "input_param->{$from} should be defined" if (HALLOW_DEBUG); }
         }
-    } else { warnf "input_param->{from} should be ARRAY ref"; }
+    } else { warnf "input_param->{from} should be ARRAY ref" if (HALLOW_DEBUG); }
     return \@sources;
 }
 
@@ -239,15 +251,13 @@ sub start {
                 } elsif (-f $input_file_path) {
                     infof "$input_file_path hasn't any entry";
                 } else {
-                    warnf "$input_file_path isn't extractable";
+                    warnf "$input_file_path isn't extractable" if (HALLOW_DEBUG);
                 }
-            } else { warnf "input_type should be defined"; }
+            } else { warnf "input_type should be defined" if (HALLOW_DEBUG); }
         }
-    } else { warnf "input_source should be ARRAY ref"; }
+    } else { warnf "input_source should be ARRAY ref" if (HALLOW_DEBUG); }
     return $is_extract;
 }
-
-
 
 1;
 
