@@ -9,10 +9,18 @@ our $VERSION = "0.0.0_01";
 use utf8;
 use autodie;
 
+use constant HALLOW_DEBUG => $ENV{HALLOW_DEBUG};
+use Log::Minimal qw/debugf infof warnf critf/; # $ENV{LM_DEBUG}
+use Log::Minimal::Indent; # call indent_log_scope("any", "MUTE");
+local $Log::Minimal::AUTODUMP = 1;
+local $Log::Minimal::COLOR = 1;
+local $Log::Minimal::LOG_LEVEL = "DEBUG";
+
 use Config::JSON;
 use File::Basename;
 use File::Spec;
 use FindBin;
+use Scalar::Util;
 
 sub complete_file_path {
     my ($file_path) = @_;
@@ -40,18 +48,26 @@ sub get_config {
     my $config = "";
     if ($conf_file_path) {
         $conf_file_path = &complete_file_path($conf_file_path) unless ($conf_file_path =~ m|^\/|);
-        if (-f $conf_file_path) {
+        if ((defined $conf_file_path) && (-f $conf_file_path) && (-s $conf_file_path)) {
             $config = &read_json_file($conf_file_path);
             if (ref $config eq "Config::JSON") {
                 $config = $config->{config}
             } else {
-                $config = "It isn't Config::JSON object";
+                if (HALLOW_DEBUG) {
+                    warnf ("Can't get Config::JSON object");
+                }
             }
         } else {
-            $config = "Can't find a configure file";
+            if (HALLOW_DEBUG) {
+                warnf ("conf_file_path isn't defined") unless (defined $conf_file_path);
+                warnf ("conf_file_path isn't there") unless (-f $conf_file_path);
+                warnf ("conf_file_path doesn't have data") unless (-s $conf_file_path);
+            }
         }
     } else {
-        $config = "Con't get a path of a configure file";
+        if (HALLOW_DEBUG) {
+            warnf ("First argument should be path of configure file");
+        }
     }
     return $config;
 }
@@ -59,28 +75,50 @@ sub get_config {
 sub read_json_file {
     my ($file_path) = @_;
     my $json = "";
-    if ((-f $file_path) && (-s $file_path)){
+    if ((defined $file_path) && (-f $file_path) && (-s $file_path)){
         eval { $json = Config::JSON->new($file_path); };
-        if ($@) { $json = "Can't read this JSON file"; }
+        if ($@) {
+            if (HALLOW_DEBUG) {
+                warnf ("Can't read this JSON file");
+            }
+        }
+    } else {
+        if (HALLOW_DEBUG) {
+            warnf ("conf_file_path isn't defined") unless (defined $file_path);
+            warnf ("conf_file_path isn't there") unless (-f $file_path);
+            warnf ("conf_file_path doesn't have data") unless (-s $file_path);
+        }
     }
     return $json;
 }
 
-sub num_to_num_string {
-    my ($num, $digit) = @_;
-    my $length = 1;
-    my $tmp = $num;
-    while (int($tmp / 10) > 0) {
-        $length++;
-        $tmp = int($tmp / 10);
+sub add_leading_zeros {
+    my ($num, $digit_num) = @_;
+    my $result = "";
+    if ((defined $num) && (Scalar::Util::looks_like_number($num))) {
+        $digit_num = 1 unless (defined $digit_num);
+        my $length = 1;
+        my $tmp = $num;
+        while (int($tmp / 10) > 0) {
+            $length++;
+            $tmp = int($tmp / 10);
+        }
+        my $diff = $digit_num - $length;
+        while ($diff > 0) {
+            $num = "0".$num;
+            $diff--;
+        }
+        $result = $num;
+    }  else {
+        if (HALLOW_DEBUG) {
+            warnf ("First argument should be positive integer number") unless (defined $num);
+        }
     }
-    my $diff = $digit - $length;
-    while ($diff > 0) {
-        $num = "0".$num;
-        $diff--;
-    }
-    return $num;
+    return $result;
 }
+
+#sub add_trailing_zeros {
+#}
 
 1;
 
