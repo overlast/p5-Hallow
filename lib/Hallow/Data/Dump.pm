@@ -71,7 +71,7 @@ sub get_dump_dir_path {
 }
 
 sub mkdirp {
-    my ($self, $path) = @_;
+    my ($path) = @_;
     my $is_mkdirp = -1;
     if (defined $path) {
         system("mkdir -p $path");
