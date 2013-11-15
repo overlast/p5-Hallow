@@ -291,7 +291,7 @@ subtest 'Test to get initial DateTime object' => sub {
 };
 
 subtest 'Test to get the module parameters set' => sub {
-    subtest 'Test _get_module_input_param()' => sub {
+    subtest 'Test _get_module_param()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -306,12 +306,8 @@ subtest 'Test to get the module parameters set' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
-                my $input_param = $h->_get_module_input_param($module_param);
-                foreach my $input_param_name (@{$input_param->{from}}) {
-                    my $tmp_input_param = $input_param->{$input_param_name};
-                    is(exists $module_param->{input}, 1, "Make check the input field is defined");
-                    is(ref $module_param->{input}, "HASH", "Make check the input field is HASH reference");
-                }
+                is(exists $module_param->{input}, 1, "Make check the input field is defined");
+                is(ref $module_param->{input}, "HASH", "Make check the input field is HASH reference");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
@@ -336,8 +332,9 @@ subtest 'Test to get the module parameters set' => sub {
     };
 };
 
-subtest 'Test a JSON configure file reader' => sub {
-    subtest 'Test _get_module_input_source()' => sub {
+
+subtest 'Test to get input parameter of each module' => sub {
+    subtest 'Test _get_module_input_param()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -360,8 +357,8 @@ subtest 'Test a JSON configure file reader' => sub {
     };
 };
 
-subtest 'Test a JSON configure file reader' => sub {
-    subtest 'Test _get_module_output_source()' => sub {
+subtest 'Test to get output parameter of each module' => sub {
+    subtest 'Test _get_module_output_param()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -383,6 +380,51 @@ subtest 'Test a JSON configure file reader' => sub {
         }
     };
 };
+
+subtest 'Test to get the module parameters set' => sub {
+    subtest 'Test _get_input_source()' => sub {
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $input_param = $h->_get_module_input_param($module_param);
+                my $imput_source = $h->_get_module_input_source($input_param);
+
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param();
+                is($module_param, "", "Make check return null character value as null parameter error");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+    };
+};
+
+
 
 
 #            print Dump $h;

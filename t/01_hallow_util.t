@@ -36,13 +36,33 @@ sub remove_dummy_json {
 
 subtest 'Test a JSON configure file reader' => sub {
     subtest 'Test read_json_file()' => sub {
-        my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
-        &write_dummy_json($tmp_json_path);
-        if (-f $tmp_json_path) {
+        {
+            my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
+            &write_dummy_json($tmp_json_path);
+            if (-f $tmp_json_path) {
+                my $json = Hallow::Util::read_json_file($tmp_json_path);
+                is(ref $json, "Config::JSON", "get a JSON::Config object");
+            }
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+        }
+        {
+            my $tmp_json_path = "/tmp/tmp_json_02_hallow_util.json";
+            &write_dummy_json($tmp_json_path);
+            my $json = Hallow::Util::read_json_file($tmp_json_path."_typo");
+            is ($json, "", "get a null character value as file can't find error value");
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+        }
+        {
+            my $tmp_json_path = "/tmp/tmp_json_03_hallow_util.json";
+            system("touch $tmp_json_path");
             my $json = Hallow::Util::read_json_file($tmp_json_path);
-            is(ref $json, "Config::JSON", "get a JSON::Config object");
-       }
-        &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+            is ($json, "", "get a null character value as null file error value");
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+        }
+        {
+            my $json = Hallow::Util::read_json_file("");
+            is ($json, "", "get a null character value as null file path error value");
+        }
     };
 
     subtest 'Test complete_file_path()' => sub {
@@ -66,13 +86,42 @@ subtest 'Test a JSON configure file reader' => sub {
     };
 
     subtest 'Test get_config()' => sub {
-        my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
-        &write_dummy_json($tmp_json_path);
-        my $config = Hallow::Util::get_config($tmp_json_path);
-        &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
-        is (ref $config, "HASH", "get HASH value which is included in config->{config}");
-        is (exists $config->{key}, 1, "this config object have a key property");
-        is ($config->{key}, "value", "this config object have a key-value pair");
+        {
+            my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
+            &write_dummy_json($tmp_json_path);
+            my $config = Hallow::Util::get_config($tmp_json_path);
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+            is (ref $config, "HASH", "get HASH value which is included in config->{config}");
+            is (exists $config->{key}, 1, "this config object have a key property");
+            is ($config->{key}, "value", "this config object have a key-value pair");
+        }
+        {
+            my $tmp_json_path = "/tmp/tmp_json_02_hallow_util.json";
+            &write_dummy_json($tmp_json_path);
+            my $config = Hallow::Util::get_config($tmp_json_path."_typo");
+            is ($config, "", "get a null character value as file can't find error value");
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+        }
+        {
+            my $tmp_json_path = "/tmp/tmp_json_03_hallow_util.json";
+            system("touch $tmp_json_path");
+            my $config = Hallow::Util::get_config($tmp_json_path);
+            is ($config, "", "get a null character value as null file error value");
+            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
+        }
+        {
+            my $config = Hallow::Util::get_config("");
+            is ($config, "", "get a null character value as null file path error value");
+        }
+    };
+
+    subtest 'Test add_leading_zeros()' => sub {
+        is(Hallow::Util::add_leading_zeros(0, 2), "00", "make check to add leading zeros to make 2 digits num 0 => 00");
+        is(Hallow::Util::add_leading_zeros(10, 2), "10", "make check to add leading zeros to make 2 digits num 10 => 10");
+        is(Hallow::Util::add_leading_zeros(10, 4), "0010", "make check to add leading zeros to make 4 digits num 10 => 0010");
+        is(Hallow::Util::add_leading_zeros(1000, 4), "1000", "make check to add leading zeros to make 4 digits num 1000 => 1000");
+        is(Hallow::Util::add_leading_zeros(100, 3), "100", "make check to add no leading zero to make 3 digits num 100 => 100");
+        is(Hallow::Util::add_leading_zeros(1000, 3), "1000", "make check to add no leading zero to make 3 digits num 1000 => 1000");
     };
 };
 
