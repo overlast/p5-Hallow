@@ -25,8 +25,13 @@ my $app_conf = << "__APP_JSON__";
     },
     "estimate" : {
         "related_items_result" : {
+            "start_ymdhms" : "2022-10-10T23:59:59",
+            "delay_seconds" : 600,
+            "time_cycle_type" : "10min",
             "output" : {
-                "file" : {
+                "to" : ["related_items_result"],
+                "related_items_result" : {
+                    "file" : "file",
                     "dump_file_ext" : "json",
                     "delay_to_process" : 300,
                     "file_split_type" : "10min",
@@ -37,7 +42,7 @@ my $app_conf = << "__APP_JSON__";
                 }
             },
             "input" : {
-                "from" : "related_items_vector",
+                "from" : ["related_items_vector"],
                 "related_items_vector" : {
                     "type" : "dump_file",
                     "file_ext" : "json",
@@ -52,14 +57,11 @@ my $app_conf = << "__APP_JSON__";
             },
             "max_result_num" : 30,
             "platform" : "jubatus",
-            "delay_seconds" : 600,
-            "time_cycle_type" : "10min",
             "wait_n_times" : "1",
             "is_daily_directory" : "1",
             "label" : {
                 "column_name" : "id",
             },
-            "start_ymdhms" : "2022-10-10T23:59:59",
         }
     },
 }
@@ -282,6 +284,100 @@ subtest 'Test to get initial DateTime object' => sub {
                 $module_param->{is_cut_surplus} = 1;
                 my $input_dt = $h->_get_initial_dt($module_param) if (exists $module_param->{input});
                 is ($input_dt->ymd()." ".$input_dt->hms(), "2022-10-10 23:40:00", "Make check to delete surplus of 10 minutes cycle and 600 sec before of 2022-10-10 23:59:59 is 2022-10-10 23:40:00");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+    };
+};
+
+subtest 'Test to get the module parameters set' => sub {
+    subtest 'Test _get_module_input_param()' => sub {
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $input_param = $h->_get_module_input_param($module_param);
+                foreach my $input_param_name (@{$input_param->{from}}) {
+                    my $tmp_input_param = $input_param->{$input_param_name};
+                    is(exists $module_param->{input}, 1, "Make check the input field is defined");
+                    is(ref $module_param->{input}, "HASH", "Make check the input field is HASH reference");
+                }
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param();
+                is($module_param, "", "Make check return null character value as null parameter error");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+    };
+};
+
+subtest 'Test a JSON configure file reader' => sub {
+    subtest 'Test _get_module_input_source()' => sub {
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $input_param = $h->_get_module_input_param($module_param);
+                is (exists $input_param->{from}, 1, "Make check input_param has from field");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+        }
+    };
+};
+
+subtest 'Test a JSON configure file reader' => sub {
+    subtest 'Test _get_module_output_source()' => sub {
+        {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $output_param = $h->_get_module_output_param($module_param);
+                is (exists $output_param->{to}, 1, "Make check output_param has to field");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }

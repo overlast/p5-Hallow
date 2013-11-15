@@ -11,6 +11,13 @@ use autodie;
 
 use DateTime;
 
+use constant HALLOW_DEBUG => $ENV{HALLOW_DEBUG};
+use Log::Minimal qw/debugf infof warnf critf/; # $ENV{LM_DEBUG}
+use Log::Minimal::Indent; # call indent_log_scope("any", "MUTE");
+local $Log::Minimal::AUTODUMP = 1;
+local $Log::Minimal::COLOR = 1;
+local $Log::Minimal::LOG_LEVEL = "DEBUG";
+
 use Hallow::Util;
 
 sub get_dt {
@@ -69,16 +76,16 @@ sub get_surplus_between_prev_dt {
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $surplus = $second % (10 * $n_times);
             $surplus = 10 * $n_times unless ($surplus);
+        } else {
+            if (HALLOW_DEBUG) {
+                warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns";
+            }
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have time_cycle_type field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $surplus;
@@ -106,16 +113,16 @@ sub get_surplus_between_next_dt {
             $surplus = (1 * $n_times) - ($second % (1 * $n_times));
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $surplus = (10 * $n_times) - ($second % (10 * $n_times));
+        } else {
+            if (HALLOW_DEBUG) {
+                warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns";
+            }
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have time_cycle_type field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $surplus;
@@ -140,13 +147,15 @@ sub get_seconds_based_on_cycle_type {
             $seconds = 1 * $n_times;
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $seconds = 10 * $n_times;
+        } else {
+            if (HALLOW_DEBUG) {
+                warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns";
+            }
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "first argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "first argument must have time_cycle_type field\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "First argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $seconds;
@@ -170,14 +179,10 @@ sub get_prev_dt {
             $next_dt = $tmp_dt;
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have time_cycle_type field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $next_dt;
@@ -200,14 +205,10 @@ sub get_next_dt {
             $next_dt = $tmp_dt->add(seconds => $diff_of_right_time);
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have time_cycle_type field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $next_dt;
@@ -221,8 +222,8 @@ sub dt_to_ymdh {
         my $h = substr($dt->hms(""), 0, 2);
         $str = $ymd.$h;
     } else {
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $str;
@@ -236,8 +237,8 @@ sub dt_to_yyyymmddhhm {
         my $hhm = substr($dt->hms(""), 0, 3);
         $str = $ymd.$hhm;
     } else {
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $str;
@@ -251,8 +252,8 @@ sub dt_to_ymdhm {
         my $hm = substr($dt->hms(""), 0, 4);
         $str = $ymd.$hm;
     } else {
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $str;
@@ -266,8 +267,8 @@ sub dt_to_yyyymmddhhmms {
         my $hhmms = substr($dt->hms(""), 0, 5);
         $str = $ymd.$hhmms;
     } else {
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $str;
@@ -281,8 +282,8 @@ sub dt_to_ymdhms {
         my $hms = $dt->hms("");
         $str =  $ymd.$hms;
     } else {
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $str;
@@ -307,14 +308,10 @@ sub get_int_time_stamp {
             $stamp = dt_to_ymdhms($dt);
         }
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have time_cycle_type field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $stamp;
@@ -333,11 +330,9 @@ sub is_first_dt_future {
             $is_future = 0;
         }
     } else {
-        if (!(ref $dt1 eq "DateTime")) {
-            print "first argument must be DateTime object\n";
-        }
-        if (!(ref $dt1 eq "DateTime")) {
-            print "second argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt1 eq "DateTime");
+            warnf "Second argument must be DateTime object" unless (ref $dt2 eq "DateTime");
         }
     }
     return $is_future;
@@ -352,14 +347,10 @@ sub add_delay_seconds_to_dt {
         $tmp_dt->subtract(seconds => $delay_seconds) if ($delay_seconds > 0);
         $result_dt = $tmp_dt;
     } else {
-        if (!(ref $param eq "HASH")) {
-            print "second argument must be HASH ref\n";
-        }
-        if ((ref $param eq "HASH") && !(exists $param->{time_cycle_type})) {
-            print "second argument must have delay_seconds field\n";
-        }
-        if (!(ref $dt eq "DateTime")) {
-            print "first argument must be DateTime object\n";
+        if (HALLOW_DEBUG) {
+            warnf "First argument must be DateTime object" unless (ref $dt eq "DateTime");
+            warnf "Second argument must be HASH ref" unless (ref $param eq "HASH");
+            warnf "Second argument must have time_cycle_type field" unless ((ref $param eq "HASH") && (exists $param->{time_cycle_type}));
         }
     }
     return $result_dt;
