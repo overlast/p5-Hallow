@@ -53,9 +53,7 @@ sub get_config {
             if (ref $config eq "Config::JSON") {
                 $config = $config->{config}
             } else {
-                if (HALLOW_DEBUG) {
-                    warnf ("Can't get Config::JSON object");
-                }
+                warnf ("Can't get Config::JSON object") if (HALLOW_DEBUG);
             }
         } else {
             if (HALLOW_DEBUG) {
@@ -65,9 +63,7 @@ sub get_config {
             }
         }
     } else {
-        if (HALLOW_DEBUG) {
-            warnf ("First argument should be path of configure file");
-        }
+        warnf ("First argument should be path of configure file") if (HALLOW_DEBUG);
     }
     return $config;
 }
@@ -78,9 +74,7 @@ sub read_json_file {
     if ((defined $file_path) && (-f $file_path) && (-s $file_path)){
         eval { $json = Config::JSON->new($file_path); };
         if ($@) {
-            if (HALLOW_DEBUG) {
-                warnf ("Can't read this JSON file");
-            }
+            warnf ("Can't read this JSON file") if (HALLOW_DEBUG);
         }
     } else {
         if (HALLOW_DEBUG) {
