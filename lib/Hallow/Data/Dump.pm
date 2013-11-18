@@ -44,19 +44,15 @@ sub get_dump_file_path {
 sub get_dump_dir_path {
     my ($param, $base_dir_path, $dt) = @_;
     my $path = "";
-    if ((ref $param eq "HASH") && (exists $param->{dump_dir_path}) && (-d $base_dir_path)) {
+    if ((ref $param eq "HASH") && (exists $param->{dump_dir_path}) && (-d $base_dir_path) && (ref $dt eq "DateTime")) {
         $path = $param->{dump_dir_path};
         unless ($path =~ m|^\/|) {
             $path = $base_dir_path."/".$path;
         }
-        if ((exists $param->{is_use_daily_directly}) && ($param->{is_use_daily_directly} == 0)) {
+        if ((exists $param->{is_use_daily_directory}) && ($param->{is_use_daily_directory} == 0)) {
         } else {
-            if (ref $dt eq "DateTime") {
-                my $ymd = $dt->ymd("");
-                $path .= "/$ymd/";
-            } else {
-                warnf "Third argument should be DateTime object" if (HALLOW_DEBUG);
-            }
+            my $ymd = $dt->ymd("");
+            $path .= "/$ymd/";
         }
         $path =~ s|/{1,}|/|g;
         mkdirp($path) unless (-d $path);
@@ -64,7 +60,8 @@ sub get_dump_dir_path {
         if (HALLOW_DEBUG) {
             warnf "First argument should be HASH ref" unless (ref $param eq "HASH");
             warnf "First HASH ref argument have dump_dir_path field" unless (exists $param->{dump_dir_path});
-            warnf "Second argument should be directly path" unless (-d $base_dir_path);
+            warnf "Second argument should be directory path" unless (-d $base_dir_path);
+            warnf "Third argument should be DateTime object" unless (ref $dt eq "DateTime");
         }
     }
     return $path;
