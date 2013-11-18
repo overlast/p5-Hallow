@@ -13,7 +13,7 @@ subtest 'Test to make an arbitrary directory' => sub {
         is(-d $dir_path, undef, "Make check $dir_path is not there(= undef)");
         Hallow::Data::Dump::mkdirp($dir_path);
         is(-d $dir_path, 1, "Make check $dir_path was made by mkdirp()");
-        system ("rm -r $dir_path");
+        system ("rm -rf $dir_path");
         is(-d $dir_path, undef, "Make check $dir_path is removed(= undef)");
     };
 };
@@ -111,9 +111,96 @@ subtest 'Test to get an arbitrary directory which is used to store dump files' =
             }
         }
 
-        system ("rm -r $dir_path");
+        system ("rm -rf $dir_path");
         is(-d $dir_path, undef, "Make check $dir_path is removed(= undef)");
 
+    };
+};
+
+subtest 'Test to get an arbitrary directory which is used to store dump files' => sub {
+    subtest 'Test get_dump_file_path()' => sub {
+        my $dir_path = "/tmp/03_hallow_data_dump_mkdirp/";
+        is(-d $dir_path, undef, "Make check $dir_path is not there(= undef)");
+        Hallow::Data::Dump::mkdirp($dir_path);
+
+        my $dt = Hallow::DateTime::get_dt("20221010T23:59:59");
+
+        {
+            my $param = {
+                "type" => "dump_file",
+                "file_ext" => "json",
+                "delay_to_process" => 300,
+                "time_cycle_type" => "10min",
+                "wait_n_times" => "1",
+                "is_use_daily_directory" => "1",
+                "dump_dir_path" => "data/related_items/vector/",
+            };
+            my $dump_dir_path = Hallow::Data::Dump::get_dump_dir_path($param, $dir_path, $dt);
+            my $dump_file_path = Hallow::Data::Dump::get_dump_file_path($param, $dump_dir_path, $dt);
+            is($dump_file_path, "/tmp/03_hallow_data_dump_mkdirp/data/related_items/vector/20221010/20221010235.json", "Make check to get daily and 10 minutely dump_file_path");
+        }
+
+        {
+            my $param = {
+                "type" => "dump_file",
+                "file_ext" => "jsoon",
+                "delay_to_process" => 300,
+                "time_cycle_type" => "10min",
+                "wait_n_times" => "1",
+                "is_use_daily_directory" => "1",
+                "dump_dir_path" => "data/related_items/vector/",
+            };
+            my $dump_dir_path = Hallow::Data::Dump::get_dump_dir_path($param, $dir_path, $dt);
+            my $dump_file_path = Hallow::Data::Dump::get_dump_file_path($param, $dump_dir_path, $dt);
+            is($dump_file_path, "/tmp/03_hallow_data_dump_mkdirp/data/related_items/vector/20221010/20221010235.jsoon", "Make check to set the dump file ext string");
+        }
+
+        {
+            my $param = {
+                "type" => "dump_file",
+                "file_ext" => "json",
+                "delay_to_process" => 300,
+                "time_cycle_type" => "hourly",
+                "wait_n_times" => "1",
+                "is_use_daily_directory" => "1",
+                "dump_dir_path" => "data/related_items/vector/",
+            };
+            my $dump_dir_path = Hallow::Data::Dump::get_dump_dir_path($param, $dir_path, $dt);
+            my $dump_file_path = Hallow::Data::Dump::get_dump_file_path($param, $dump_dir_path, $dt);
+            is($dump_file_path, "/tmp/03_hallow_data_dump_mkdirp/data/related_items/vector/20221010/2022101023.json", "Make check to get daily and hourly dump_file_path");
+        }
+
+        {
+            my $param = {
+                "type" => "dump_file",
+                "file_ext" => "json",
+                "delay_to_process" => 300,
+                "time_cycle_type" => "hourly",
+                "wait_n_times" => "1",
+                "is_use_daily_directory" => "1",
+                "dump_dir_path" => "data/related_items/vector/",
+            };
+            my $dump_dir_path = Hallow::Data::Dump::get_dump_dir_path($param, $dir_path, $dt);
+
+            {
+                my $dump_file_path = Hallow::Data::Dump::get_dump_file_path($param, $dump_dir_path, "");
+                is($dump_file_path, "", "Make check to return null character value as a message of no DateTime object error");
+            }
+            {
+                my $dump_file_path = Hallow::Data::Dump::get_dump_file_path($param, "", $dt);
+                is($dump_file_path, "", "Make check to return null character value as a message of no directory path error");
+            }
+            {
+                my $dump_file_path = Hallow::Data::Dump::get_dump_file_path([], $dump_dir_path, $dt);
+                is($dump_file_path, "", "Make check to return null character value as a message of no HASH parameter error");
+            }
+            {
+                my $dump_file_path = Hallow::Data::Dump::get_dump_file_path({}, $dump_dir_path, $dt);
+                is($dump_file_path, "", "Make check to return null character value as a message of no param->{time_cycle_type} error");
+            }
+        }
+        system ("rm -rf $dir_path");
+        is(-d $dir_path, undef, "Make check $dir_path is removed(= undef)");
     };
 };
 
