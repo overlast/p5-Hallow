@@ -21,10 +21,10 @@ use Hallow::DateTime;
 sub get_dump_file_path {
     my ($param, $dir_path, $dt) = @_;
     my $path = "";
-    if ((ref $param eq "HASH") && (-d $dir_path) && (ref $dt eq "DateTime")) {
+    if ((ref $param eq "HASH") && (exists $param->{time_cycle_type}) && (-d $dir_path) && (ref $dt eq "DateTime")) {
         my $ext = "";
         $ext = ".".$param->{file_ext} if (exists $param->{file_ext});
-        my $ymd_stamp = Hallow::DateTime::get_ymd_stamp($param, $dt);
+        my $ymd_stamp = Hallow::DateTime::get_int_time_stamp($dt, $param);
         if ($ymd_stamp) {
             $path = $dir_path."/".$ymd_stamp.$ext;
             $path =~ s|/{1,}|/|g;
@@ -34,6 +34,7 @@ sub get_dump_file_path {
     } else {
         if (HALLOW_DEBUG) {
             warnf "First argument should be HASH ref" unless (ref $param eq "HASH");
+            warnf "First HASH ref argument have dump_dir_path field" unless ((ref $param eq "HASH") && (exists $param->{dump_dir_path}));
             warnf "Second argument should be directory path" unless (-d $dir_path);
             warnf "Third argument should be DateTime object" unless (ref $dt eq "DateTime");
         }
@@ -59,7 +60,7 @@ sub get_dump_dir_path {
     } else {
         if (HALLOW_DEBUG) {
             warnf "First argument should be HASH ref" unless (ref $param eq "HASH");
-            warnf "First HASH ref argument have dump_dir_path field" unless (exists $param->{dump_dir_path});
+            warnf "First HASH ref argument have dump_dir_path field" unless ((ref $param eq "HASH") && (exists $param->{dump_dir_path}));
             warnf "Second argument should be directory path" unless (-d $base_dir_path);
             warnf "Third argument should be DateTime object" unless (ref $dt eq "DateTime");
         }
