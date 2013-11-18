@@ -114,13 +114,13 @@ sub _get_initial_dt {
             if (ref $dt eq "DateTime") {
                 $dt = Hallow::DateTime::add_delay_seconds_to_dt($dt, $param);
             } else {
-                warn "Can't get DateTime object from get_prev_dt()" if (HALLOW_DEBUG);
+                warnf "Can't get DateTime object from get_prev_dt()" if (HALLOW_DEBUG);
             }
         } else {
-            warn "Can't get DateTime object from get_dt()" if (HALLOW_DEBUG);
+            warnf "Can't get DateTime object from get_dt()" if (HALLOW_DEBUG);
         }
     } else {
-        warn "Can't get parameters to initialize DateTime object" if (HALLOW_DEBUG);
+        warnf "Can't get parameters to initialize DateTime object" if (HALLOW_DEBUG);
     }
     return $dt;
 }
@@ -180,10 +180,29 @@ sub _get_module_input_param {
     my ($self, $module_param) = @_;
     my $param = "";
     if (ref $module_param eq "HASH") {
-        if (exists $module_param->{input}) {
-            $param = $module_param->{input};
-        } else {
-            warnf "first argument must have input field" if (HALLOW_DEBUG);
+        if ((exists $module_param->{input}) && ($module_param->{input}->{from})) {
+            my $param_names = $module_param->{input}->{from};
+            if (ref $param_names eq "ARRAY") {
+                my @params = ();
+                foreach my $param_name (@{$param_names}) {
+                    if (exists $module_param->{input}->{$param_name}) {
+                        my $tmp_param = $module_param->{input}->{$param_name};
+                        push @params, $tmp_param;
+                    } else {
+                        warnf "module_param->{input}->{$param_name} field should be there";
+                    }
+                    $param = \@params;
+                }
+            }
+            else {
+                if (esists $module_param->{input}->{$param_names}) {
+                    $param = [$module_param->{input}->{$param_names}];
+                } else {
+                    warnf "module_param->{input}->{$param_names} field should be there";
+                }
+            }
+       } else {
+            warnf "first argument must have param->{input}->{from} field" if (HALLOW_DEBUG);
         }
     } else {
         warnf "first argument must be HASH ref" if (HALLOW_DEBUG);
@@ -195,10 +214,29 @@ sub _get_module_output_param {
     my ($self, $module_param) = @_;
     my $param = "";
     if (ref $module_param eq "HASH") {
-        if (exists $module_param->{output}) {
-            $param = $module_param->{output};
+        if ((exists $module_param->{output}) && ($module_param->{output}->{to})) {
+            my $param_names = $module_param->{output}->{to};
+            if (ref $param_names eq "ARRAY") {
+                my @params = ();
+                foreach my $param_name (@{$param_names}) {
+                    if (exists $module_param->{output}->{$param_name}) {
+                        my $tmp_param = $module_param->{output}->{$param_name};
+                        push @params, $tmp_param;
+                    } else {
+                        warnf "module_param->{output}->{$param_name} field should be there";
+                    }
+                    $param = \@params;
+                }
+            }
+            else {
+                if (esists $module_param->{output}->{$param_names}) {
+                    $param = [$module_param->{output}->{$param_names}];
+                } else {
+                    warnf "module_param->{output}->{$param_names} field should be there";
+                }
+            }
         } else {
-            warnf "first argument must have output field" if (HALLOW_DEBUG);
+            warnf "first argument must have param->{output}->{to} field" if (HALLOW_DEBUG);
         }
     } else {
         warnf "first argument must be HASH ref" if (HALLOW_DEBUG);
@@ -206,57 +244,59 @@ sub _get_module_output_param {
     return $param;
 }
 
-sub _get_module_input_source {
-    my ($self, $param) = @_;
-    my @sources = ();
-    my $input_param = $self->{config}->{input};
-    if ((exists $input_param->{from}) && (ref $input_param->{from} eq "ARRAY")) {
-        foreach my $from (@{$input_param->{from}}) {
-            if (exists $input_param->{$from}) {
-                my $from_param = $input_param->{$from};
-                if (ref $from_param eq "HASH") {
-                    my $from_type = $from_param->{type};
-                    if ($from_type eq "dump_file") {
-                        my $tmp_dir_path = Hallow::Data::Dump::get_dump_dir_path($from_param, $self->{base_dir_path}, $self->{dt});
-                        my $tmp_file_path = Hallow::Data::Dump::get_dump_file_path($from_param, $tmp_dir_path, $self->{dt});
-                        if (-f $tmp_file_path) {
-                            my $tmp = [$from_type, $tmp_file_path];
-                            push @sources, $tmp;
-                        } else { warnf "tmp_file_path should be there" if (HALLOW_DEBUG); }
-                    } elsif ($from_type eq "db") {
-                    } else { warnf "Undefined from_type : $from_type" if (HALLOW_DEBUG); }
-                } else { warnf "from_param should be HASH ref" if (HALLOW_DEBUG); }
-            } else { warnf "input_param->{$from} should be defined" if (HALLOW_DEBUG); }
+sub _get_module_io_sources {
+    my ($self, $params) = @_;
+    my $sources = "";
+    if (ref $params eq "ARRAY") {
+        my @tmp_sources = ();
+        foreach my $io_param (@{$params}) {
+            if (ref $io_param eq "HASH") {
+                if (exists $io_param->{media_type}) {
+                    my $io_type = $io_param->{media_type};
+                    if ($io_type eq "file") {
+                        my $tmp_dir_path = Hallow::Data::Dump::get_dump_dir_path($io_param, $self->{base_dir_path}, $self->{current_dt});
+                        my $tmp_file_path = Hallow::Data::Dump::get_dump_file_path($io_param, $tmp_dir_path, $self->{current_dt});
+                        my $tmp = [$io_type, $tmp_file_path];
+                        push @tmp_sources, $tmp;
+                    } elsif ($io_type eq "db") {
+                    } else { warnf "Undefined media_type : $io_type" if (HALLOW_DEBUG); }
+                } else { warnf "io_param->{media_type} field should be exists" if (HALLOW_DEBUG); }
+            } else { warnf "io_param should be HASH ref" if (HALLOW_DEBUG); }
         }
-    } else { warnf "input_param->{from} should be ARRAY ref" if (HALLOW_DEBUG); }
-    return \@sources;
+        $sources = \@tmp_sources if (@tmp_sources);
+    } else { warnf "params should be ARRAY ref" if (HALLOW_DEBUG); }
+    return $sources;
 }
 
 sub start {
     my ($self, $module_name) = @_;
     my $is_extract = 0;
     my $module_param = $self->_get_module_param($module_name);
-    my $input_source = $self->get_module_input_source($module_param);
-    if (ref $input_source eq "ARRAY") {
-        foreach my $input (@{$input_source}) {
-            my $input_type = $input_source->[0];
-            if ((defined $input_type) && ($input_type eq "dump_file")) {
+    my $io_sources = $self->get_module_io_source($module_param);
+    if (ref $io_sources eq "ARRAY") {
+        foreach my $io_source (@{$io_sources}) {
+            my $io_media_type = $io_source->[0];
+            if ((defined $io_media_type) && ($io_media_type eq "file")) {
                 my $min_log_size = 50; # 50 byte
-                my $input_file_path = $input_source->[1];
-                if ((-f $input_file_path) && (-s $input_file_path > $min_log_size)) {
-                    infof "$input_file_path is extractable";
+                my $io_file_path = $io_source->[1];
+                if ((-f $io_file_path) && (-s $io_file_path > $min_log_size)) {
+                    infof "$io_file_path is extractable";
                     $is_extract++;
-                    my $estimate_count = $self->action($self->{config}, $module_name, $input_file_path);
-                    infof $estimate_count;
-                } elsif (-f $input_file_path) {
-                    infof "$input_file_path hasn't any entry";
+                    my $entry_count = $self->action($self->{config}, $module_name, $io_file_path);
+                    infof $entry_count;
+                } elsif (-f $io_file_path) {
+                    infof "$io_file_path hasn't any entry";
                 } else {
-                    warnf "$input_file_path isn't extractable" if (HALLOW_DEBUG);
+                    warnf "$io_file_path isn't extractable" if (HALLOW_DEBUG);
                 }
-            } else { warnf "input_type should be defined" if (HALLOW_DEBUG); }
+            } else { warnf "io_media_type should be defined" if (HALLOW_DEBUG); }
         }
-    } else { warnf "input_source should be ARRAY ref" if (HALLOW_DEBUG); }
+    } else { warnf "io_source_s should be ARRAY ref" if (HALLOW_DEBUG); }
     return $is_extract;
+}
+
+sub action {
+    return "";
 }
 
 1;
