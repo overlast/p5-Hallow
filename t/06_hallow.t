@@ -28,13 +28,14 @@ my $app_conf = << "__APP_JSON__";
             "start_ymdhms" : "2022-10-10T23:59:59",
             "delay_seconds" : 600,
             "time_cycle_type" : "10min",
+            "is_cut_surplus" : 1,
             "output" : {
                 "to" : ["related_items_result"],
                 "related_items_result" : {
-                    "file" : "file",
+                    "media_type" : "file",
                     "dump_file_ext" : "json",
                     "delay_to_process" : 300,
-                    "file_split_type" : "10min",
+                    "time_cycle_type" : "10min",
                     "wait_n_times" : "1",
                     "is_daily_directory" : "1",
                     "dump_dir_path" : "data/related_items/result/",
@@ -44,12 +45,12 @@ my $app_conf = << "__APP_JSON__";
             "input" : {
                 "from" : ["related_items_vector"],
                 "related_items_vector" : {
-                    "type" : "dump_file",
+                    "media_type" : "file",
                     "file_ext" : "json",
                     "platform" : "jubatus",
                     "seed_config" : "brand_db",
                     "delay_to_process" : 300,
-                    "file_split_type" : "10min",
+                    "time_cycle_type" : "10min",
                     "wait_n_times" : "1",
                     "is_daily_directory" : "1",
                     "dump_dir_path" : "data/related_items/vector/",
@@ -262,6 +263,7 @@ subtest 'Test to get initial DateTime object' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
+                $module_param->{is_cut_surplus} = 0;
                 my $input_dt = $h->_get_initial_dt($module_param) if (exists $module_param->{input});
                 is ($input_dt->ymd()." ".$input_dt->hms(), "2022-10-10 23:39:59", "Make check 10 minutes + 600 sec before of 2022-10-10 23:59:59 is 2022-10-10 23:39:59");
             }
@@ -350,7 +352,9 @@ subtest 'Test to get input parameter of each module' => sub {
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
                 my $input_param = $h->_get_module_input_param($module_param);
-                is (exists $input_param->{from}, 1, "Make check input_param has from field");
+                is (ref $input_param, "ARRAY", "Make check input_param is ARRAY ref");
+                is (ref $input_param->[0], "HASH", "Make check elements of input_param is HASH ref");
+                is (exists $input_param->[0]->{dump_dir_path}, 1, "Make check elements has dump_dir_path field");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
@@ -374,7 +378,9 @@ subtest 'Test to get output parameter of each module' => sub {
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
                 my $output_param = $h->_get_module_output_param($module_param);
-                is (exists $output_param->{to}, 1, "Make check output_param has to field");
+                is (ref $output_param, "ARRAY", "Make check output_param is ARRAY ref");
+                is (ref $output_param->[0], "HASH", "Make check elements of output_param is HASH ref");
+                is (exists $output_param->[0]->{dump_dir_path}, 1, "Make check elements has dump_dir_path field");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
@@ -382,7 +388,7 @@ subtest 'Test to get output parameter of each module' => sub {
 };
 
 subtest 'Test to get the module parameters set' => sub {
-    subtest 'Test _get_input_source()' => sub {
+    subtest 'Test _get_io_source()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -397,9 +403,17 @@ subtest 'Test to get the module parameters set' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
+                my $dt = $h->_get_initial_dt($module_param);
+                $h->{current_dt} = $dt;
                 my $input_param = $h->_get_module_input_param($module_param);
-                my $imput_source = $h->_get_module_input_source($input_param);
-
+                my $input_sources = $h->_get_module_io_sources($input_param);
+                is(ref $input_sources, "ARRAY", "Make check input_sources is ARRAY ref");
+                if (ref $input_sources eq "ARRAY") {
+                    foreach my $input_source (@{$input_sources}) {
+                        is($input_source->[0], "file", "Make check input_source->[0] is media_type field value");
+                        is($input_source->[1], "/home/overlast/git/CPAN/p5-Hallow/t/data/related_items/vector/20221010/20221010234.json", "Make check input_source->[1] is a file path( is_cut_surplus:1, is_daily_directory:1, time_cycle_type:10min)");
+                    }
+                }
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
@@ -417,13 +431,40 @@ subtest 'Test to get the module parameters set' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param();
-                is($module_param, "", "Make check return null character value as null parameter error");
+                my $dt = $h->_get_initial_dt($module_param);
+                $h->{current_dt} = $dt;
+                {
+                    my $input_param = $h->_get_module_input_param($module_param);
+                    my $input_sources = $h->_get_module_io_sources("");
+                    is($input_sources, "", "Make check to get null character error as not ARRAY ref error")
+                }
+                {
+                    my $input_param = $h->_get_module_input_param($module_param);
+                    my $input_sources = $h->_get_module_io_sources([]);
+                    is($input_sources, "", "Make check to get null character error as not HASH ref error")
+                }
+                {
+                    my $input_param = $h->_get_module_input_param($module_param);
+                    my $input_sources = $h->_get_module_io_sources([{}]);
+                    is($input_sources, "", "Make check to get null character error as no media_type field error")
+                }
+                {
+                    my $input_param = $h->_get_module_input_param($module_param);
+                    my $input_sources = $h->_get_module_io_sources([{"media_type"=>"monster"}]);
+                    is($input_sources, "", "Make check to get null character error as unknown media_type error")
+                }
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
     };
 };
 
+subtest 'Test to get the module parameters set' => sub {
+    subtest 'Test start()' => sub {
+        {
+        }
+    };
+};
 
 
 
