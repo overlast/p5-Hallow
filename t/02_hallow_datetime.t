@@ -458,9 +458,9 @@ subtest 'Test to return a comparative result of the unixtime of two DateTime obj
         is (Hallow::DateTime::is_first_dt_future($dt1, $dt1), 0, "Make check to get false value(0) when both DateTime object is same");
         is (Hallow::DateTime::is_first_dt_future($dt2, $dt1), 1, "Make check to get true value(1) when second DateTime object is future");
 
-        is (Hallow::DateTime::get_int_time_stamp("", ""), "", "Make check to get null character string as undefined object error message");
-        is (Hallow::DateTime::get_int_time_stamp($dt1, ""), "", "Make check to get null character string as undefined object error message");
-        is (Hallow::DateTime::get_int_time_stamp("", $dt1), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::is_first_dt_future("", ""), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::is_first_dt_future($dt1, ""), "", "Make check to get null character string as undefined object error message");
+        is (Hallow::DateTime::is_first_dt_future("", $dt1), "", "Make check to get null character string as undefined object error message");
     };
 };
 
