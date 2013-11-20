@@ -5,6 +5,7 @@ use File::Basename;
 use File::Spec;
 
 use Hallow;
+use Hallow::Data::Dump;
 
 my $app_conf = << "__APP_JSON__";
 {
@@ -336,7 +337,7 @@ subtest 'Test to get the module parameters set' => sub {
 
 
 subtest 'Test to get input parameter of each module' => sub {
-    subtest 'Test _get_module_input_param()' => sub {
+    subtest 'Test _get_module_input_params()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -351,7 +352,7 @@ subtest 'Test to get input parameter of each module' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
-                my $input_param = $h->_get_module_input_param($module_param);
+                my $input_param = $h->_get_module_input_params($module_param);
                 is (ref $input_param, "ARRAY", "Make check input_param is ARRAY ref");
                 is (ref $input_param->[0], "HASH", "Make check elements of input_param is HASH ref");
                 is (exists $input_param->[0]->{dump_dir_path}, 1, "Make check elements has dump_dir_path field");
@@ -362,7 +363,7 @@ subtest 'Test to get input parameter of each module' => sub {
 };
 
 subtest 'Test to get output parameter of each module' => sub {
-    subtest 'Test _get_module_output_param()' => sub {
+    subtest 'Test _get_module_output_params()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -377,7 +378,7 @@ subtest 'Test to get output parameter of each module' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $module_param = $h->_get_module_param($module_name);
-                my $output_param = $h->_get_module_output_param($module_param);
+                my $output_param = $h->_get_module_output_params($module_param);
                 is (ref $output_param, "ARRAY", "Make check output_param is ARRAY ref");
                 is (ref $output_param->[0], "HASH", "Make check elements of output_param is HASH ref");
                 is (exists $output_param->[0]->{dump_dir_path}, 1, "Make check elements has dump_dir_path field");
@@ -388,7 +389,7 @@ subtest 'Test to get output parameter of each module' => sub {
 };
 
 subtest 'Test to get the module parameters set' => sub {
-    subtest 'Test _get_io_source()' => sub {
+    subtest 'Test _get_module_io_param_map()' => sub {
         {
             my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
             my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
@@ -405,13 +406,42 @@ subtest 'Test to get the module parameters set' => sub {
                 my $module_param = $h->_get_module_param($module_name);
                 my $dt = $h->_get_initial_dt($module_param);
                 $h->{current_dt} = $dt;
-                my $input_param = $h->_get_module_input_param($module_param);
-                my $input_sources = $h->_get_module_io_sources($input_param);
-                is(ref $input_sources, "ARRAY", "Make check input_sources is ARRAY ref");
-                if (ref $input_sources eq "ARRAY") {
-                    foreach my $input_source (@{$input_sources}) {
-                        is($input_source->[0], "file", "Make check input_source->[0] is media_type field value");
-                        is($input_source->[1], "/home/overlast/git/CPAN/p5-Hallow/t/data/related_items/vector/20221010/20221010234.json", "Make check input_source->[1] is a file path( is_cut_surplus:1, is_daily_directory:1, time_cycle_type:10min)");
+                my $io_param_map = $h->_get_module_io_param_map($module_name);
+                is(ref $io_param_map, "HASH", "Make check io_param_map is ARRAY ref");
+            }
+        }
+    };
+};
+
+subtest 'Test to get the module parameters set' => sub {
+    subtest 'Test _get_module_io_target_map()' => sub {
+        {
+          my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $module_param = $h->_get_module_param($module_name);
+                my $dt = $h->_get_initial_dt($module_param);
+                $h->{current_dt} = $dt;
+                my $io_param_map = $h->_get_module_io_param_map($module_name);
+                is(ref $io_param_map, "HASH", "Make check io_param_map is ARRAY ref");
+                my $io_target_map = $h->_get_module_io_target_map($io_param_map);
+                is(ref $io_target_map, "HASH", "Make check $io_target_map is HASH ref");
+                foreach my $key (keys %{$io_target_map}) {
+                    my $params = $io_target_map->{$key};
+                    if (ref $params eq "ARRAY") {
+                        for (my $i = 0; $i <= $#$params; $i++) {
+                            is($params->[$i]->[0], $io_param_map->{$key}->[$i]->{media_type}, "Make check input_source->[0] is media_type field value");
+                            is($params->[$i]->[1], Hallow::Data::Dump::get_dump_file_path($io_param_map->{$key}->[$i], Hallow::Data::Dump::get_dump_dir_path($io_param_map->{$key}->[$i], $h->{base_dir_path}, $h->{current_dt}), $h->{current_dt}), "Make check input_source->[1] is a file path( is_cut_surplus:1, is_daily_directory:1, time_cycle_type:10min)");
+                        }
                     }
                 }
             }
@@ -430,27 +460,27 @@ subtest 'Test to get the module parameters set' => sub {
             &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
-                my $module_param = $h->_get_module_param();
+                my $module_param = $h->_get_module_param($module_name);
                 my $dt = $h->_get_initial_dt($module_param);
                 $h->{current_dt} = $dt;
                 {
-                    my $input_param = $h->_get_module_input_param($module_param);
-                    my $input_sources = $h->_get_module_io_sources("");
+                    my $input_param = $h->_get_module_io_param_map($module_name);
+                    my $input_sources = $h->_get_module_io_target_map("");
                     is($input_sources, "", "Make check to get null character error as not ARRAY ref error")
                 }
                 {
-                    my $input_param = $h->_get_module_input_param($module_param);
-                    my $input_sources = $h->_get_module_io_sources([]);
+                    my $input_param = $h->_get_module_io_param_map($module_name);
+                    my $input_sources = $h->_get_module_io_target_map([]);
                     is($input_sources, "", "Make check to get null character error as not HASH ref error")
                 }
                 {
-                    my $input_param = $h->_get_module_input_param($module_param);
-                    my $input_sources = $h->_get_module_io_sources([{}]);
+                    my $input_param = $h->_get_module_io_param_map($module_name);
+                    my $input_sources = $h->_get_module_io_target_map([{}]);
                     is($input_sources, "", "Make check to get null character error as no media_type field error")
                 }
                 {
-                    my $input_param = $h->_get_module_input_param($module_param);
-                    my $input_sources = $h->_get_module_io_sources([{"media_type"=>"monster"}]);
+                    my $input_param = $h->_get_module_io_param_map($module_name);
+                    my $input_sources = $h->_get_module_io_target_map([{"media_type"=>"monster"}]);
                     is($input_sources, "", "Make check to get null character error as unknown media_type error")
                 }
             }
@@ -462,6 +492,22 @@ subtest 'Test to get the module parameters set' => sub {
 subtest 'Test to get the module parameters set' => sub {
     subtest 'Test start()' => sub {
         {
+            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
+            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
+            &_write_dummy_json($tmp_app_conf_path, $app_conf);
+            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $param = {
+                "config_file_path" => $tmp_app_conf_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
+            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
+            foreach my $module_name (@{$recipe_map}) {
+                my $is_done = $h->start($module_name);
+                is($is_done, -1, "");
+            }
+            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
     };
 };
