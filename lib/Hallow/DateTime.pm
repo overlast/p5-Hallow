@@ -114,9 +114,7 @@ sub get_surplus_between_next_dt {
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $surplus = (10 * $n_times) - ($second % (10 * $n_times));
         } else {
-            if (HALLOW_DEBUG) {
-                warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns";
-            }
+            warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns" if (HALLOW_DEBUG);
         }
     } else {
         if (HALLOW_DEBUG) {
@@ -148,9 +146,7 @@ sub get_seconds_based_on_cycle_type {
         } elsif (($type eq "10sec") || ($type eq "yyyymmddhhmms")) {
             $seconds = 10 * $n_times;
         } else {
-            if (HALLOW_DEBUG) {
-                warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns";
-            }
+            warnf "Can't get surplus because param->{time_cycle_type} wasn't much any known patterns" if (HALLOW_DEBUG);
         }
     } else {
         if (HALLOW_DEBUG) {
