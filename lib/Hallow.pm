@@ -28,9 +28,13 @@ use Hallow::DateTime;
 use Hallow::Data::Handle;
 use Hallow::Data::Dump;
 
+# インスタンスの初期化をする
+# Hallowを継承したクラスから呼ぶフレームワーク内のクラスで頻繁に使う値を格納する
 sub new {
     my ($class, $param) = @_;
     my $hash = {};
+
+    # $paramは空でも問題ない。ただし与えるならHASH refで。
     if (defined $param) {
         if (ref $param eq "HASH") {
             $hash = $param;
@@ -38,7 +42,14 @@ sub new {
             warnf "First argument should be define as HASH ref" if (HALLOW_DEBUG);
         }
     }
+
+    # new()を実行したファイルのあるディレクトリを獲得
     $hash->{base_dir_path} = Hallow::Util::get_base_dir_path();
+
+    # 共通の JSON インスタンスを獲得
+    $hash->{json} = JSON->new->utf8(1)->allow_nonref; # to UTF8 flagged decode
+
+    # 必須な設定ファイルの読み込み
     if ((exists $hash->{config_file_path}) && (-f $hash->{config_file_path})) {
         $hash->{config} = Hallow::Util::get_config($hash->{config_file_path});
     } else {
@@ -47,6 +58,7 @@ sub new {
             warnf "hash->{config_file_path} should be define as the path to configure file" unless (-f $hash->{config_file_path});
         }
     }
+
     return bless $hash, $class;
 }
 
