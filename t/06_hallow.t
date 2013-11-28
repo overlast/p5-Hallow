@@ -146,6 +146,15 @@ subtest 'Test a constructor' => sub {
             is (exists $h->{config}, "", "Make check self->{config} field needs what the config file is there");
         }
         {
+            my $param = {
+                "config_file_path" => "/tmp/tmp_json_06_hallow.json",
+                "recipe" => "estimate",
+            };
+            my $h = Hallow->new($param);
+            is (exists $h->{json}, 1, "Make check json field exists in Hallow object");
+            is (ref $h->{json}, "JSON", "Make check json field has JSON object");
+        }
+        {
             my $tmp_json_path = "/tmp/tmp_json_06_hallow.json";
             &_write_dummy_json($tmp_json_path, $app_conf);
             my $param = {
@@ -505,12 +514,14 @@ subtest 'Test to get the module parameters set' => sub {
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
                 my $is_done = $h->start($module_name);
-                is($is_done, -1, "");
+                is($is_done, -1, "Make check return value is -1 as a return value of action() which is a stub method");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
         }
     };
 };
+
+
 
 
 
