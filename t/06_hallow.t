@@ -415,8 +415,8 @@ subtest 'Test to get the module parameters set' => sub {
                 my $module_param = $h->_get_module_param($module_name);
                 my $dt = $h->_get_initial_dt($module_param);
                 $h->{current_dt} = $dt;
-                my $io_param_map = $h->_get_module_io_param_map($module_name);
-                is(ref $io_param_map, "HASH", "Make check io_param_map is ARRAY ref");
+                my $io_param_map = $h->_get_module_io_param_map($module_param);
+                is(ref $io_param_map, "HASH", "Make check io_param_map is HASH ref");
             }
         }
     };
@@ -440,7 +440,7 @@ subtest 'Test to get the module parameters set' => sub {
                 my $module_param = $h->_get_module_param($module_name);
                 my $dt = $h->_get_initial_dt($module_param);
                 $h->{current_dt} = $dt;
-                my $io_param_map = $h->_get_module_io_param_map($module_name);
+                my $io_param_map = $h->_get_module_io_param_map($module_param);
                 is(ref $io_param_map, "HASH", "Make check io_param_map is ARRAY ref");
                 my $io_target_map = $h->_get_module_io_target_map($io_param_map);
                 is(ref $io_target_map, "HASH", "Make check $io_target_map is HASH ref");
@@ -513,7 +513,8 @@ subtest 'Test to get the module parameters set' => sub {
             &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
             my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
             foreach my $module_name (@{$recipe_map}) {
-                my $is_done = $h->start($module_name);
+                my $module_param = $h->_get_module_param($module_name);
+                my $is_done = $h->start($module_name, $module_param);
                 is($is_done, -1, "Make check return value is -1 as a return value of action() which is a stub method");
             }
             &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
