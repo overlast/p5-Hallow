@@ -21,6 +21,9 @@ use Coro::Timer;
 
 use JSON;
 
+#use XS::MRO::Compat;
+use base qw/Hallow::Client/;
+
 use Hallow::Util;
 use Hallow::DateTime;
 use Hallow::Data::Handle;
@@ -167,7 +170,7 @@ sub sequence {
                             $is_last_of_sequence = 1; last;
                         }
                         infof ("start() to process...") if (HALLOW_DEBUG);
-                        $self->start($module_name);
+                        $self->start($module_name, $module_param);
                     }
                 }
                 if (($is_last_of_sequence) || ($timeout)) {
@@ -271,23 +274,17 @@ sub _get_module_output_params {
 }
 
 sub _get_module_io_param_map {
-    my ($self, $module_name) = @_;
+    my ($self, $module_param) = @_;
     my $param = "";
-    if (exists $self->{recipe_name}) {
-        my $recipe_name = $self->{recipe_name};
-        if ((defined $module_name) && ($module_name) && (exists $self->{config}->{$recipe_name}->{$module_name})) {
-            my $module_param = $self->{config}->{$recipe_name}->{$module_name};
-            my $i_params = $self->_get_module_input_params($module_param);
-            my $o_params = $self->_get_module_output_params($module_param);
-            $param = {
-                'input' => $i_params,
-                'output' => $o_params,
-            };
-        } else {
-            warnf "Can't get module parameter from self->config->recipe_name->module_name" if (HALLOW_DEBUG);
-        }
+    if ((defined $module_param) && (ref $module_param eq "HASH")) {
+        my $i_params = $self->_get_module_input_params($module_param);
+        my $o_params = $self->_get_module_output_params($module_param);
+        $param = {
+            'input' => $i_params,
+            'output' => $o_params,
+        };
     } else {
-        warnf "Can't get self->recipe_name" if (HALLOW_DEBUG);
+        warnf "Can't get module parameter from module_param" if (HALLOW_DEBUG);
     }
     return $param;
 }
@@ -330,12 +327,12 @@ sub _get_module_io_target_map {
 # module_name ごとの処理をaction()によって消化したい
 # Hallowを継承した先のaction()を呼ぶので、いろんな機能に共通な処理だけ書く
 sub start {
-    my ($self, $module_name) = @_;
+    my ($self, $module_name, $module_param) = @_;
     my $is_extract = 0;
-    # module_nameがなければ却下
-    if (defined $module_name) {
-        # module_nemeがあったらio_paramを確保する
-        my $io_param_map = $self->_get_module_io_param_map($module_name);
+    # module_nameとmodule_paramがなければ却下
+    if ((defined $module_name) && (defined $module_param)) {
+        # module_paramがあったらio_paramを確保する
+        my $io_param_map = $self->_get_module_io_param_map($module_param);
         # io_targetをio_paramから取得する処理が頻発するので取得する
         # 後々、使わないで済むようにできたら消したい
         my $io_target_map = $self->_get_module_io_target_map($io_param_map);
@@ -343,10 +340,9 @@ sub start {
         if (ref $io_param_map eq "HASH") {
             if (ref $io_target_map eq "HASH") {
                 # io周りがあるならaction()でよく使う設定をselfに登録する
-                # configで指定された機械学習のクライアントを登録する
+                # configで指定された機械学習器のクライアントを登録する
                 $self->{ml_client} = $self->get_ml_client($module_name);
-                # action()を実行する
-                # action()を呼ぶ。action()で消化した入力のentry数が返ってくる
+                # 継承元のaction()を呼ぶ。action()で消化した入力のentry数が返ってくる
                 my $entry_count = $self->action($module_name, $io_param_map, $io_target_map);
                 $is_extract += $entry_count;
                 infof "processed entry number using action() : $entry_count" if (HALLOW_DEBUG);
@@ -359,10 +355,10 @@ sub start {
     return $is_extract;
 }
 
+# 継承元のaction()で上書きされる
 sub action {
     my ($self, $module_name, $io_param_map, $io_target_map) = @_;
-    my $config = $self->{config};
-
+    #my $config = $self->{config};
     #foreach my $io_source (@{$io_sources}) {
     #my $io_media_type = $io_source->[0];
     #if ((defined $io_media_type) && ($io_media_type eq "file")) {
@@ -370,6 +366,8 @@ sub action {
     #my $io_file_path = $io_source->[1];
     #if ((-f $io_file_path) && (-s $io_file_path > $min_log_size)) {
     #infof "$io_file_path is extractable";
+    # 継承元でaction()は上書きする必要がある。
+    warn "You should override action() in child package of Hallow.pm" if (HALLOW_DEBUG);
     return -1;
 }
 
