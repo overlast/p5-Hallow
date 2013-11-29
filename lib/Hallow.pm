@@ -21,8 +21,6 @@ use Coro::Timer;
 
 use JSON;
 
-use Jubatus;
-
 use Hallow::Util;
 use Hallow::DateTime;
 use Hallow::Data::Handle;
@@ -329,14 +327,26 @@ sub _get_module_io_target_map {
     return $target_map;
 }
 
+# module_name ごとの処理をaction()によって消化したい
+# Hallowを継承した先のaction()を呼ぶので、いろんな機能に共通な処理だけ書く
 sub start {
     my ($self, $module_name) = @_;
     my $is_extract = 0;
+    # module_nameがなければ却下
     if (defined $module_name) {
+        # module_nemeがあったらio_paramを確保する
         my $io_param_map = $self->_get_module_io_param_map($module_name);
+        # io_targetをio_paramから取得する処理が頻発するので取得する
+        # 後々、使わないで済むようにできたら消したい
         my $io_target_map = $self->_get_module_io_target_map($io_param_map);
+        # ip_paramとio_targetが無いなら却下
         if (ref $io_param_map eq "HASH") {
             if (ref $io_target_map eq "HASH") {
+                # io周りがあるならaction()でよく使う設定をselfに登録する
+                # configで指定された機械学習のクライアントを登録する
+                $self->{ml_client} = $self->get_ml_client($module_name);
+                # action()を実行する
+                # action()を呼ぶ。action()で消化した入力のentry数が返ってくる
                 my $entry_count = $self->action($module_name, $io_param_map, $io_target_map);
                 $is_extract += $entry_count;
                 infof "processed entry number using action() : $entry_count" if (HALLOW_DEBUG);
@@ -345,6 +355,7 @@ sub start {
             }
         } else { warnf "io_param_map should be HASH ref" if (HALLOW_DEBUG); }
     } else { warnf "module_name should be define" if (HALLOW_DEBUG); }
+    # 入力を消化できたら1以上が返る
     return $is_extract;
 }
 
@@ -359,7 +370,6 @@ sub action {
     #my $io_file_path = $io_source->[1];
     #if ((-f $io_file_path) && (-s $io_file_path > $min_log_size)) {
     #infof "$io_file_path is extractable";
-
     return -1;
 }
 
