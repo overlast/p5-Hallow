@@ -35,6 +35,13 @@ sub remove_dummy_json {
 }
 
 subtest 'Test a JSON configure file reader' => sub {
+    subtest 'Test get_json_parser()' => sub {
+        {
+            my $json = Hallow::Util::get_json_parser();
+            is (ref $json, "JSON", "Make check to get a JSON object");
+        }
+    };
+
     subtest 'Test read_json_file()' => sub {
         {
             my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
