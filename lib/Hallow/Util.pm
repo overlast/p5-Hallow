@@ -21,6 +21,7 @@ use File::Basename;
 use File::Spec;
 use FindBin;
 use Scalar::Util;
+use JSON;
 
 sub complete_file_path {
     my ($file_path) = @_;
@@ -66,6 +67,11 @@ sub get_config {
         warnf ("First argument should be path of configure file") if (HALLOW_DEBUG);
     }
     return $config;
+}
+
+sub get_json_parser {
+    my $json = JSON->new->utf8(1)->allow_nonref;
+    return $json;
 }
 
 sub read_json_file {
