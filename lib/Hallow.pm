@@ -48,7 +48,7 @@ sub new {
     $hash->{base_dir_path} = Hallow::Util::get_base_dir_path();
 
     # 共通の JSON インスタンスを獲得
-    $hash->{json} = JSON->new->utf8(1)->allow_nonref; # to UTF8 flagged decode
+    $hash->{json} = Hallow::Util::get_json_parser(); # to UTF8 flagged decode
 
     # 必須な設定ファイルの読み込み
     if ((exists $hash->{config_file_path}) && (-f $hash->{config_file_path})) {
