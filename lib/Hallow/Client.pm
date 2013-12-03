@@ -18,6 +18,38 @@ local $Log::Minimal::LOG_LEVEL = "DEBUG";
 
 use Jubatus;
 
+use Hallow::Util;
+
+sub new {
+    my ($class, $param) = @_;
+    my $hash = {};
+
+    # $paramは空でも問題ない。ただし与えるならHASH refで。
+    if (defined $param) {
+        if (ref $param eq "HASH") {
+            $hash = $param;
+        } else {
+            warnf "First argument should be define as HASH ref" if (HALLOW_DEBUG);
+        }
+    }
+
+    # new()を実行したファイルのあるディレクトリを獲得
+    $hash->{base_dir_path} = Hallow::Util::get_base_dir_path();
+    # 共通の JSON インスタンスを獲得
+    $hash->{json} = Hallow::Util::get_json_parser(); # to UTF8 flagged decode
+
+    # 必須な設定ファイルの読み込み
+    if ((exists $hash->{config_file_path}) && (-f $hash->{config_file_path})) {
+        $hash->{config} = Hallow::Util::get_config($hash->{config_file_path});
+    } else {
+        if (HALLOW_DEBUG) {
+            warnf "hash->{config_file_path} should be define" unless (exists $hash->{config_file_path});
+            warnf "hash->{config_file_path} should be define as the path to configure file" unless (-f $hash->{config_file_path});
+        }
+    }
+    return bless $hash, $class;
+}
+
 sub get_ml_client {
     my ($self, $module_name) = @_;
     my $config = $self->{config};
