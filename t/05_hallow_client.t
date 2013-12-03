@@ -16,7 +16,7 @@ my $app_conf = << "__APP_JSON__";
     "platform" : {
         "jubatus" : {
             "server_name" : "jubarecommender",
-            "config_file_path" : "/tmp/tmp_jubatus_conf_06_hallow.json",
+            "config_file_path" : "/tmp/tmp_jubatus_conf_05_hallow_client.json",
             "app_name" : "item_recommend",
             "host" : "localhost",
             "port" : 57200,
@@ -136,7 +136,7 @@ subtest 'Test a constructor' => sub {
         }
         {
             my $param = {
-                "config_file_path" => "/tmp/tmp_json_06_hallow.json",
+                "config_file_path" => "/tmp/tmp_json_05_hallow_client.json",
                 "recipe" => "estimate",
             };
             my $h = Hallow::Client->new($param);
@@ -146,7 +146,7 @@ subtest 'Test a constructor' => sub {
         }
         {
             my $param = {
-                "config_file_path" => "/tmp/tmp_json_06_hallow.json",
+                "config_file_path" => "/tmp/tmp_json_05_hallow_client.json",
                 "recipe" => "estimate",
             };
             my $h = Hallow::Client->new($param);
@@ -154,7 +154,7 @@ subtest 'Test a constructor' => sub {
             is (ref $h->{json}, "JSON", "Make check json field has JSON object");
         }
         {
-            my $tmp_json_path = "/tmp/tmp_json_06_hallow.json";
+            my $tmp_json_path = "/tmp/tmp_json_05_hallow_client.json";
             &_write_dummy_json($tmp_json_path, $app_conf);
             my $param = {
                 "config_file_path" => $tmp_json_path,
@@ -167,82 +167,44 @@ subtest 'Test a constructor' => sub {
     };
 };
 
-=pod
-
-subtest 'Test to get the module parameters set' => sub {
-    subtest 'Test start()' => sub {
+subtest 'Test to get an object of a client of a machine learning framework' => sub {
+    subtest 'Test get_max_result_num()' => sub {
         {
-            my $tmp_app_conf_path = "/tmp/tmp_app_conf_06_hallow.json";
-            my $tmp_jubatus_conf_path = "/tmp/tmp_jubatus_conf_06_hallow.json";
-            &_write_dummy_json($tmp_app_conf_path, $app_conf);
-            &_write_dummy_json($tmp_jubatus_conf_path, $jubatus_conf);
+            my $tmp_json_path = "/tmp/tmp_json_05_hallow_client.json";
+            &_write_dummy_json($tmp_json_path, $app_conf);
             my $param = {
-                "config_file_path" => $tmp_app_conf_path,
+                "config_file_path" => $tmp_json_path,
                 "recipe_name" => "estimate",
             };
-            my $h = Hallow->new($param);
-            &_remove_dummy_json($tmp_app_conf_path) if (-f $tmp_app_conf_path);
-            my $recipe_map = $h->_get_recipe_map(); # ["related_items_result"]
-            foreach my $module_name (@{$recipe_map}) {
-                my $module_param = $h->_get_module_param($module_name);
-                my $is_done = $h->start($module_name, $module_param);
-                is($is_done, -1, "Make check return value is -1 as a return value of action() which is a stub method");
+            my $h = Hallow::Client->new($param);
+            my $module_names = $h->{config}->{recipe}->{$h->{recipe_name}};
+            foreach my $module_name (@{$module_names}) {
+                my $res_num = $h->get_ml_client($module_name);
+                is (ref $res_num, "Jubatus::Recommender::Client", "Make check to get a client object reference");
             }
-            &_remove_dummy_json($tmp_jubatus_conf_path) if (-f $tmp_jubatus_conf_path);
+            &_remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
         }
     };
 };
 
-
-
-
-
-#            print Dump $h;
-
-
-subtest 'Test a JSON configure file reader' => sub {
-    subtest 'Test get_config()' => sub {
-
-
+subtest 'Test to get the maximum number of a result' => sub {
+    subtest 'Test get_max_result_num()' => sub {
         {
-            my $tmp_json_path = "/tmp/tmp_json_01_hallow_util.json";
-            &write_dummy_json($tmp_json_path);
-            my $config = Hallow::Util::get_config($tmp_json_path);
-            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
-            is (ref $config, "HASH", "get HASH value which is included in config->{config}");
-            is (exists $config->{key}, 1, "this config object have a key property");
-            is ($config->{key}, "value", "this config object have a key-value pair");
+            my $tmp_json_path = "/tmp/tmp_json_05_hallow_client.json";
+            &_write_dummy_json($tmp_json_path, $app_conf);
+            my $param = {
+                "config_file_path" => $tmp_json_path,
+                "recipe_name" => "estimate",
+            };
+            my $h = Hallow::Client->new($param);
+            my $module_names = $h->{config}->{recipe}->{$h->{recipe_name}};
+            foreach my $module_name (@{$module_names}) {
+                my $res_num = $h->get_max_result_num($module_name);
+                is ($res_num, 30, "Make check of the number which is written in configure file");
+            }
+            &_remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
         }
-        {
-            my $tmp_json_path = "/tmp/tmp_json_02_hallow_util.json";
-            &write_dummy_json($tmp_json_path);
-            my $config = Hallow::Util::get_config($tmp_json_path."_typo");
-            is ($config, "", "get a null character value as file can't find error value");
-            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
-        }
-        {
-            my $tmp_json_path = "/tmp/tmp_json_03_hallow_util.json";
-            system("touch $tmp_json_path");
-            my $config = Hallow::Util::get_config($tmp_json_path);
-            is ($config, "", "get a null character value as null file error value");
-            &remove_dummy_json($tmp_json_path) if (-f $tmp_json_path);
-        }
-        {
-            my $config = Hallow::Util::get_config("");
-            is ($config, "", "get a null character value as null file path error value");
-        }
-    };
-
-    subtest 'Test add_leading_zeros()' => sub {
-        is(Hallow::Util::add_leading_zeros(0, 2), "00", "make check to add leading zeros to make 2 digits num 0 => 00");
-        is(Hallow::Util::add_leading_zeros(10, 2), "10", "make check to add leading zeros to make 2 digits num 10 => 10");
-        is(Hallow::Util::add_leading_zeros(10, 4), "0010", "make check to add leading zeros to make 4 digits num 10 => 0010");
-        is(Hallow::Util::add_leading_zeros(1000, 4), "1000", "make check to add leading zeros to make 4 digits num 1000 => 1000");
-        is(Hallow::Util::add_leading_zeros(100, 3), "100", "make check to add no leading zero to make 3 digits num 100 => 100");
-        is(Hallow::Util::add_leading_zeros(1000, 3), "1000", "make check to add no leading zero to make 3 digits num 1000 => 1000");
     };
 };
-
-=cut
 
 done_testing;
