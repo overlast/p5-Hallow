@@ -18,6 +18,7 @@ local $Log::Minimal::LOG_LEVEL = "DEBUG";
 
 use Coro;
 use Coro::Timer;
+use Coro::AIO;
 
 use JSON;
 
