@@ -168,7 +168,7 @@ subtest 'Test a constructor' => sub {
 };
 
 subtest 'Test to get an object of a client of a machine learning framework' => sub {
-    subtest 'Test get_max_result_num()' => sub {
+    subtest 'Test get_ml_client()' => sub {
         {
             my $tmp_json_path = "/tmp/tmp_json_05_hallow_client.json";
             &_write_dummy_json($tmp_json_path, $app_conf);
